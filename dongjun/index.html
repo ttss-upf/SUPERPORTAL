@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>whatsapp</title>
+  <link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+
+<body>
+  <div class="container">
+    <!-- leftSide begin -->
+    <div class="pic_list_con" id="profile">
+      <h3><span>Choose the image</span></h3>
+      <ul class="clearfix" >
+          <li><a href="javascript:void(0)" onclick="chat.handleProfileChange('../assignment1/image/user0.jpg')"><img src="../assignment1/image/user0.jpg" alt="profile"></a></li>
+          <li><a href="javascript:void(0)" onclick="chat.handleProfileChange('../assignment1/image/user1.jpg')"><img src="../assignment1/image/user1.jpg" alt="profile"></a></li>
+          <li><a href="javascript:void(0)" onclick="chat.handleProfileChange('../assignment1/image/user2.jpg')"><img src="../assignment1/image/user4.jpg" alt="profile"></a></li>
+          <li><a href="javascript:void(0)" onclick="chat.handleProfileChange('../assignment1/image/user3.jpg')"><img src="../assignment1/image/user3.jpg" alt="profile"></a></li>
+      </ul>
+    </div>
+    <div class="leftSide">
+      
+      <div class="header">
+        <div class="close_button">
+          <button class="red_button"></button>
+          <button class="yellow_button"></button>
+          <button class="green_button"></button>
+        </div>
+        <div class="setting">
+          <div class="userimg"><img src="./image/user0.jpg" class="cover" id="userProfile"></div>
+          <ul class="nav_icons">
+            <!-- <li><ion-icon name="people-outline"></ion-icon></li>
+            <li><ion-icon name="scan-circle-outline"></ion-icon></li>
+            <li><ion-icon name="create-outline"></ion-icon></li> -->
+            <li class="dropdown">
+              <ion-icon name="chevron-down-outline"
+                onclick="javascript:document.getElementById('dropdown-content').style.display=='block'?document.getElementById('dropdown-content').style.display='none':document.getElementById('dropdown-content').style.display='block'"></ion-icon>
+              <input type="color" onchange="chat.handleColorChange()" id="color" value="#dcf8c6" style="
+        display: none;">
+              <div class="dropdown-content" id="dropdown-content">
+                <a><label for="color">Theme color</label></a><br>
+                <a onclick="javascript:document.getElementById('profile').style.display=='block'?document.getElementById('profile').style.display='none':document.getElementById('profile').style.display='block'">Change profile</a> <br>
+                <a href="https://google.com">Log out</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="search_chat">
+        <div>
+          <input type="text" placeholder="input group name you want to connect" id="groupName">
+          <ion-icon name="search-outline"></ion-icon>
+        </div>
+      </div>
+    
+      <div class="search_chat">
+        <ion-icon name="list-outline" style="margin-top: 4px;"></ion-icon>
+        <h4>Contract List</h4>
+      </div>
+      <div class="chatlist" id="chatListArea">
+      </div>
+    </div>
+    <!-- leftSide end -->
+    <!-- rightSide begin -->
+    <div class="rightSide">
+      <div class="header" id="rightHeader">
+        <div class="imgText">
+          <!-- <div class="userimg">
+            <img src="./image/user1.jpg" class="cover">
+          </div> -->
+          <h4 id="currentGroupName">
+            <br><span>Online</span>
+          </h4>
+        </div>
+        <ul class="nav_icons">
+          <!-- <li><ion-icon name="search-outline"></ion-icon></li> -->
+          <li><ion-icon name="chevron-down-outline"
+              onclick="javascript:document.getElementById('dropdown-content2').style.display=='block'?document.getElementById('dropdown-content2').style.display='none':document.getElementById('dropdown-content2').style.display='block'"></ion-icon>
+          </li>
+        </ul>
+        <div class="dropdown-content2" id="dropdown-content2">
+
+        </div>
+      </div>
+      <!-- chatBox begin, most important part -->
+      <div class="chatBox" id="chatBoxArea">
+        <img class="background" src="./image/background.png" id="background"></img>
+      </div>
+      <!-- chatBox end -->
+      <!-- image upload begin -->
+      <div id="drop_zone">Drag Image Here</div>
+      <!-- image upload end -->
+      <!-- message input begin -->
+      <div class="chatBox_input" id="chatBox_input">
+        <ion-icon name="happy-outline"
+          onclick='javascript:chat.createEmojis();'></ion-icon>
+        <input type="text" placeholder="Input your message or image link <The link cannot contain '?' and '&' >" id="message">
+        <!-- <ion-icon name="mic"></ion-icon> -->
+      </div>
+      <div class="table" id="table">
+        <div class="table_box_big">
+          <div class="table_box">
+            <div class="table_tbody_box">
+              <table>
+                <tr>
+                  <td >&#128512;</td>
+                  <td >&#128513;</td>
+                  <td >&#128514;</td>
+                  <td >&#128515;</td>
+                  <td >&#128516;</td>
+                  <td >&#128517;</td>
+                  <td >&#128511;</td>
+                  <td >&#128510;</td>
+                  <td >&#128509;</td>
+                </tr>
+                <tr>
+                  <td >&#129488;</td>
+                  <td >&#129317;</td>
+                  <td >&#129319;</td>
+                  <td >&#129320;</td>
+                  <td >&#129315;</td>
+                  <td >&#128517;</td>
+                  <td >&#129323;</td>
+                  <td >&#128548;</td>
+                  <td >&#128545;</td>
+                </tr>
+                <tr>
+                  <td >&#127382;</td>
+                  <td >&#127383;</td>
+                  <td >&#127784;</td>
+                  <td >&#127792;</td>
+                  <td >&#127805;</td>
+                  <td >&#127808;</td>
+                  <td >&#127814;</td>
+                  <td >&#127813;</td>
+                  <td >&#127842;</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- message input end -->
+      </div>
+      <!-- rightSide end -->
+    </div>
+
+    <!-- script begin -->
+    <script src="./js/sillyclient.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/main.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <!-- script end -->
+</body>
+
+</html>

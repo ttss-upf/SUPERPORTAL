@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <meta charset="UTF-8">
+        <title>Badabing Messenger</title>
+        <link type="text/css" rel="stylesheet" media="all" href="style.css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+    </head>
+    <body>
+        <!--<div id="IDprompt">Enter username</div>-->
+        <div id="main" class="container">
+            <div id="history">
+                <div class="toolbarhist">
+                    <!--<h2>History of conversations</h2>-->    
+                    <div class="lefticons">
+                        <img src="me.jpeg" class="profilepic">
+                    </div>
+                    <div id="myprofile">
+                        <h3>Badabing</h3>
+                    </div>
+                    <div id="connectionStatus">
+                        <img class="light">
+                    </div>
+                    <div class="righticons">
+                        <img src="3dots.png" class="icons">
+                    </div>
+                </div>
+				<!--Replace header above with my pp + other shortcuts-->
+                <div class="fill">
+                <!--<input placeholder="search and filter"/>-->
+                <button class="connectButton">connect</button>
+                <button class="lobbyButton">lobby &#8634;</button>
+                <button class="roomsButton">change room</button>
+                <button class="usersButton">&#127968;</button>
+                </div>
+                <div class="histlist">
+                <!--List of all saved/previous conversations-->
+                    <div class="hpreview privateconv" style="display: none;">
+                        <div class="lefticons">
+                            <img src="fembot_profilepic.jpeg" class="profilepic">
+                        </div>
+                        <div class="previewbox">
+                            <p id="roomName" class="contactname"></p>
+                            <p class="messageprev">This is a preview of the last message</p>
+                        </div>
+                    </div>
+                    <div class="onlineUsersHeader" style="display: none;">
+                        <p >Users connected to this room</p>
+                    </div>
+                    <div class="listOnlineUsers">
+                        <div class="onlineUsers" style="display: none;">
+                            <p>User 1</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="histlist lobby" style="display: none;">
+                    <div class="hpreview privateconv">
+                        <div class="lefticons">
+                            <img src="fembot_profilepic.jpeg" class="profilepic">
+                        </div>
+                        <div class="previewbox">
+                            <p id="roomName" class="contactname"></p>
+                            <p class="messageprev">This is a preview of the last message</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="messages">
+                <div class="toolbarmess">
+                    <div class="lefticons">
+                        <img src="fembot_profilepic.jpeg" class="profilepic">
+                    </div>
+                    <div class="currentcontact">      
+				        <h3 id="roomName">Connect to chat and view current rooms in lobby</h3>
+                        <p class="groupinfo fade-out" style="display: none;">Click here for room info</p>
+                    </div>
+                </div>
+                <div id="conversation">
+                    <!--Actual conversation, new content dynamically added here (scrollable)-->
+                    <div class="joinleft" style="display: none">
+                        <div class="username" style="display: none">system message</div>
+                        <div class="publishedmsg sysmsg" style="display: none">
+                            lastu joined the room
+                        </div>
+                    </div>
+                    <div class="received" style="display: none">
+                        <div class="username" style="display: none">Fembot111</div>
+                        <div class="publishedmsg" style="display: none">this is a message I received from someone</div>
+                    </div>
+                    <div class="received" style="display: none">
+                        <div class="username" >Fembot111</div>
+                        <div class="publishedmsg" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dolor a nibh eleifend congue. Curabitur ac accumsan dui. Nulla rhoncus fermentum eros et gravida. In in hendrerit quam, sed finibus diam. Duis tristique velit velit, non venenatis leo fermentum ut. Fusce eget orci bibendum ante fringilla bibendum. Nunc pretium efficitur nibh, non luctus massa maximus sed. Suspendisse lorem leo, ullamcorper vel feugiat non, maximus nec metus. Sed sagittis lorem id enim viverra molestie. Pellentesque finibus magna ipsum, in euismod risus aliquet in. Integer tincidunt nulla vitae erat ultrices, non consequat magna euismod. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus sed mi massa. Ut aliquet non ipsum sit amet porttitor. Duis facilisis diam a neque ultricies dapibus. Aliquam id metus augue. Suspendisse aliquet efficitur sem a accumsan. Sed id ultricies nulla. Nulla facilisi. Aenean commodo consequat arcu eu vehicula. Aliquam erat volutpat. Integer gravida lacus at massa vulputate facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec id est pharetra erat gravida tincidunt.</div>
+                    </div>
+                    <div class="sent" style="display: none">
+                        <div class="myusername" style="display: none">lastuadri</div>
+                        <div class="publishedmsg" style="display: none">hi</div>
+                    </div>
+                    <div class="received" style="display: none">
+                        <div class="username" style="display: none">Fembot111</div>
+                        <div class="publishedmsg private" style="display: none">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sed dolor a nibh eleifend congue. Curabitur ac accumsan dui. Nulla rhoncus fermentum eros et gravida. In in hendrerit quam, sed finibus diam. Duis tristique velit velit, non venenatis leo fermentum ut. Fusce eget orci bibendum ante fringilla bibendum. Nunc pretium efficitur nibh, non luctus massa maximus sed. Suspendisse lorem leo, ullamcorper vel feugiat non, maximus nec metus. Sed sagittis lorem id enim viverra molestie. Pellentesque finibus magna ipsum, in euismod risus aliquet in. Integer tincidunt nulla vitae erat ultrices, non consequat magna euismod. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus sed mi massa. Ut aliquet non ipsum sit amet porttitor. Duis facilisis diam a neque ultricies dapibus. Aliquam id metus augue. Suspendisse aliquet eff.</div>
+                    </div>
+                    <div class="joinleft" style="display: none;">
+                    <div id="sysmsg" class="username" style="display: none;">system message</div>
+                    <div class="publishedmsg" style="display: none;">
+                        lastu joined the room
+                    </div>
+                    </div>
+                </div>
+                <div class="fill" id="typesendmsg">
+                <textarea class="currentmessage" type="text" placeholder="type a message"></textarea>
+                <input id="sendbutton" class="sendmessage" type="button" value="send">
+                </div>
+            </div>
+        </div>
+
+		<script type="text/javascript" src="sillyclient.js"></script>
+        <script type="text/javascript" src="code.js"></script>
+        <script>mychat.init();</script>
+    </body>
+    
+</html>

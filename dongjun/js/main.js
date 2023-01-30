@@ -1,11 +1,11 @@
 const chat = {
-  url: "wss://ecv-etic.upf.edu/node/9000/ws",
+  url: "ws://localhost:3000/",
   myUserName: "",
   server: null,
   text: "",
   chatList: [],
   userList: [],
-  myUserId: "",
+  myUserId: "1",
   onlineNum: 0,
   msgType: "text",
   msgInput: null,
@@ -37,52 +37,57 @@ const chat = {
   ],
   // init the data binded.
   init: function () {
-    this.server = new SillyClient();
+    // this.server = new WebSocket(this.url);
     this.msgInput = document.getElementById("message");
-    this.server.on_message = this.receiveMsg.bind(this);
+    // this.server.onmessage = this.receiveMsg.bind(this);
     this.groupInput = document.getElementById("groupName");
     this.background = document.getElementById("background");
     this.rightHeader = document.getElementById("rightHeader");
     this.chatBoxArea = document.getElementById("chatBoxArea");
-    this.server.on_user_connected = this.onConnect.bind(this);
-    this.server.on_user_disconnected = this.onLeave.bind(this);
+    // this.server.on_user_connected = this.onConnect.bind(this);
+    // this.server.on_user_disconnected = this.onLeave.bind(this);
     this.checkbox = document.getElementsByName("userSelected");
     this.chatListArea = document.getElementById("chatListArea");
     this.chatBox_input = document.getElementById("chatBox_input");
     this.msgInput.addEventListener("keydown", this.inputText.bind(this));
     this.groupInput.addEventListener("keydown", this.inputGroup.bind(this));
     // this.startLoading.bind(this);
-    this.startLoading();
+    // this.startLoading();
     // this.connectToServer();
   },
   // first step, need you input the username and get all the room names
-  startLoading: async function () {
-    this.myUserName = prompt("Input your username");
-    if (this.myUserName == undefined) this.myUserName = "Default username";
-    let promise = new Promise((resolve, reject) => {
-      this.server.getReport((res) => {
-        console.log(res);
-        console.log(Object.keys(res.rooms));
-        this.chatList = Object.keys(res.rooms);
-        this.renderLeftSide();
-      });
-    });
-    await promise;
-  },
+  // startLoading: async function () {
+  //   this.myUserName = prompt("Input your username");
+  //   if (this.myUserName == undefined) this.myUserName = "Default username";
+  //   let promise = new Promise((resolve, reject) => {
+  //     this.server.getReport((res) => {
+  //       console.log(res);
+  //       console.log(Object.keys(res.rooms));
+  //       this.chatList = Object.keys(res.rooms);
+  //       this.renderLeftSide();
+  //     });
+  //   });
+  //   await promise;
+  // },
   // connect to server and set userID and get roomInfo
   connectToServer: async function (id) {
-    return new Promise((resolve, reject) => {
-      this.server.connect(this.url, this.currentGroup);
-      this.server.on_ready = (id) => {
-        this.myUserId = String(id);
-        this.userList.push(this.myUserId);
+    // return new Promise((resolve, reject) => {
+    //   this.server.connect(this.url, this.currentGroup);
+    //   this.server.on_ready = (id) => {
+    //     this.myUserId = String(id);
+    //     this.userList.push(this.myUserId);
 
-        this.server.getRoomInfo(this.currentGroup, (res) => {
-          this.roomInfo = res;
-          resolve(res);
-        });
-      };
-    });
+    //     this.server.getRoomInfo(this.currentGroup, (res) => {
+    //       this.roomInfo = res;
+    //       resolve(res);
+    //     });
+    //   };
+    // });
+    this.server = new WebSocket(this.url + this.currentGroup);
+    this.server.onmessage = this.receiveMsg.bind(this);
+
+    console.log("connectToServer");
+    console.log(this.server);
   },
   // to notify users who comes in ant out
   sendNotification: function (data) {
@@ -107,23 +112,24 @@ const chat = {
   onConnect: function (userid) {
     this.userList.push(Number(userid));
     this.onlineNum += 1;
-    if (Number(this.myUserId) == Math.min(...this.userList)) {
-      console.log("I am the minimum");
-      this.loadData(this.currentGroup).then((history) => {
-        if (history != undefined) {
-          // let data = JSON.parse(history).content;
-          console.log("history" + history);
-          console.log("user:" + userid + "connected");
-          this.server.sendMessage(history, [userid]);
-          // data.forEach((ele) => {
-          //   this.addDataToChatContent(ele);
-          //   this.server.sendMessage(JSON.stringify(ele));
-          // });
-          // this.renderLeftSide();
-          // this.renderRightSide();
-        }
-      });
-    }
+    // if (Number(this.myUserId) == Math.min(...this.userList)) {
+    // console.log("I am the minimum");
+    // this.loadData(this.currentGroup).then((history) => {
+    //   if (history != undefined) {
+    //     // let data = JSON.parse(history).content;
+    //     console.log("history" + history);
+    //     console.log("user:" + userid + "connected");
+
+    //     // this.server.sendMessage(history, [userid]);
+    //     // data.forEach((ele) => {
+    //     //   this.addDataToChatContent(ele);
+    //     //   this.server.sendMessage(JSON.stringify(ele));
+    //     // });
+    //     // this.renderLeftSide();
+    //     // this.renderRightSide();
+    //   }
+    // });
+    // }
     let content =
       "User&nbsp;<span style='font-weight:bolder'>" +
       userid +
@@ -164,11 +170,11 @@ const chat = {
         if (obj[k].checked && this.privateUser.indexOf(obj[k].value == -1))
           this.privateUser.push(obj[k].value);
       }
-      if (testLink(this.msgInput.value)) {
-        // https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/1024px-Elon_Musk_Royal_Society_%28crop2%29.jpg
-        this.msgInput.value =
-          "<a href=" + this.msgInput.value + ' target="_blank"><img src="' + this.msgInput.value + '" style="width:100%" /></a>';
-      }
+      // if (testLink(this.msgInput.value)) {
+      //   // https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg/1024px-Elon_Musk_Royal_Society_%28crop2%29.jpg
+      //   this.msgInput.value =
+      //     "<a href=" + this.msgInput.value + ' target="_blank"><img src="' + this.msgInput.value + '" style="width:100%" /></a>';
+      // }
       if (this.privateUser.length > 0) {
         this.msgType = "private";
         this.msgInput.value = "Private msg:" + this.msgInput.value;
@@ -187,21 +193,21 @@ const chat = {
       };
       console.log(JSON.stringify(data));
       this.msgInput.value = "";
-      if (this.msgType == "private") {
-        msg = {
-          type: "out",
-          content:
-            "The message you sent is private, unseen except user: " +
-            this.privateUser,
-        };
-        this.sendNotification(msg);
-        this.server.sendMessage(JSON.stringify(data), this.privateUser);
-        // this.msgType = "text";
-      } else {
-        this.server.sendMessage(data);
-        // this.server.sendMessage(data);
-        // this.storeData(this.currentGroup, data);
-      }
+      // if (this.msgType == "private") {
+      //   msg = {
+      //     type: "out",
+      //     content:
+      //       "The message you sent is private, unseen except user: " +
+      //       this.privateUser,
+      //   };
+      //   this.sendNotification(msg);
+      //   // this.server.sendMessage(JSON.stringify(data), this.privateUser);
+      //   // this.msgType = "text";
+      // } else {
+      this.server.send(JSON.stringify(data));
+      // this.server.sendMessage(data);
+      // this.storeData(this.currentGroup, data);
+      // }
       this.addDataToChatContent(data);
       this.renderLeftSide();
       this.showText(data);
@@ -214,8 +220,8 @@ const chat = {
       this.currentGroup = this.groupInput.value;
       this.connectToServer().then((res) => {
         this.chatBoxArea.innerHTML = "";
-        this.userList = this.roomInfo.clients;
-        this.onlineNum = this.roomInfo.clients.length;
+        // this.userList = this.roomInfo.clients;
+        // this.onlineNum = this.roomInfo.clients.length;
         // if (!this.isLoaded) this.chatBoxArea.innerHTML = "";
 
         this.addDataToChatList();
@@ -331,10 +337,10 @@ const chat = {
       div_tag = document.createElement("div");
       this.data.forEach((ele) => {
         if (ele.groupName === element) {
-          if(testLink(ele.data[ele.data.length - 1].content)) {
-            content = "image"
+          if (testLink(ele.data[ele.data.length - 1].content)) {
+            content = "image";
           } else {
-            content = ele.data[ele.data.length - 1].content
+            content = ele.data[ele.data.length - 1].content;
           }
 
           date = ele.data[ele.data.length - 1].timestamp;
@@ -409,110 +415,118 @@ const chat = {
   // if the data recvied is history, showed using this function
   showHistory: function (items) {
     console.log("show history");
-    let msg = {
-      type: "out",
-      content: "The next message is the chatting history.",
-    };
-    this.sendNotification(msg);
-    p_tag = document.createElement("p");
-    div_tag = document.createElement("div");
-    div_tag.setAttribute("class", "message frnd_message");
-    console.log(items);
-    items.forEach((item) => {
-      if (item.type != "private") {
-        br_tag = document.createElement("br");
-        span_tag = document.createElement("span");
-        span_tag.innerHTML = item.timestamp
-          ? item.timestamp.slice(0, 10)
-          : "someday before";
-        p_tag.innerHTML =
-          p_tag.innerHTML +
-          "<a class='userName' href='javascript:void(0)' onclick='test(" +
-          item.senderId +
-          ")'>~ " +
-          item.username +
-          "</a><br>" +
-          item.content;
-        p_tag.appendChild(span_tag);
+    // let msg = {
+    //   type: "out",
+    //   content: "The next message is the chatting history.",
+    // };
+    // this.sendNotification(msg);
+    // p_tag = document.createElement("p");
+    // div_tag = document.createElement("div");
+    // div_tag.setAttribute("class", "message frnd_message");
+    // console.log(items);
+    // items.forEach((item) => {
+    //   if (item.type != "private") {
+    //     br_tag = document.createElement("br");
+    //     span_tag = document.createElement("span");
+    //     span_tag.innerHTML = item.timestamp
+    //       ? item.timestamp.slice(0, 10)
+    //       : "someday before";
+    //     p_tag.innerHTML =
+    //       p_tag.innerHTML +
+    //       "<a class='userName' href='javascript:void(0)' onclick='test(" +
+    //       item.senderId +
+    //       ")'>~ " +
+    //       item.username +
+    //       "</a><br>" +
+    //       item.content;
+    //     p_tag.appendChild(span_tag);
 
-        p_tag.appendChild(br_tag);
-        p_tag.appendChild(br_tag);
-        div_tag.appendChild(p_tag);
-      }
-    });
-    // console.log(123);
-    this.chatBoxArea.appendChild(div_tag);
-    this.chatBoxArea.scrollTop = 100000;
+    //     p_tag.appendChild(br_tag);
+    //     p_tag.appendChild(br_tag);
+    //     div_tag.appendChild(p_tag);
+    //   }
+    // });
+    // // console.log(123);
+    // this.chatBoxArea.appendChild(div_tag);
+    // this.chatBoxArea.scrollTop = 100000;
   },
   // listen and trigger when receive msg
-  receiveMsg: function (author_id, data) {
-    data = JSON.parse(data);
-    console.log(data);
-    if (data.type != "history") {
-      data.senderId = author_id;
+  receiveMsg: function (data) {
+    console.log(data.data);
+    data = JSON.parse(data.data);
+    console.log(data.data);
+    if(data.content != undefined) {
+
+      // if (data.type != "history") {
+      // data.senderId = author_id;
       this.addDataToChatContent(data);
-      this.addDataToChatList();
-      this.renderLeftSide();
+      // this.addDataToChatList();
+      // this.renderLeftSide();
       item = {
         content: data.content,
         timestamp: getTime(),
         username: data.username,
-        senderId: author_id,
-        isReceived: author_id != this.myUserId,
+        senderId: data.senderId,
+        isReceived: data.senderId != this.myUserId,
         type: data.type,
       };
       this.storeData(this.currentGroup, data);
       this.showText(item);
+      // } else {
+      //   this.showHistory(data.content);
+      // }
     } else {
-      this.showHistory(data.content);
+      this.myUserId = data
     }
   },
   // save the history on the server
   storeData: function (key, value) {
     // value.type = "history";
-    let that = this;
-    this.loadData(key).then((history) => {
-      console.log(history);
-      if (history != undefined) {
-        data = JSON.parse(history);
-      } else {
-        data = {
-          content: [],
-          type: "history",
-        };
-      }
-      if (data.content.includes) data.content.push(value);
-      console.log(data);
-      that.server.storeData(key, JSON.stringify(data));
-    });
+    // let that = this;
+    // this.loadData(key).then((history) => {
+    //   console.log(history);
+    //   if (history != undefined) {
+    //     data = JSON.parse(history);
+    //   } else {
+    //     data = {
+    //       content: [],
+    //       type: "history",
+    //     };
+    //   }
+    //   if (data.content.includes) data.content.push(value);
+    //   console.log(data);
+    //   that.server.storeData(key, JSON.stringify(data));
+    // });
+    console.log("storeData");
   },
   // get the history on the server
   loadData: async function (key) {
-    let promise = new Promise((resolve, reject) => {
-      this.server.loadData(key, function (res) {
-        resolve(res);
-      });
-    });
-    let result = await promise;
+    // let promise = new Promise((resolve, reject) => {
+    //   this.server.loadData(key, function (res) {
+    //     resolve(res);
+    //   });
+    // });
+    // let result = await promise;
 
-    try {
-      if (JSON.parse(result).content == undefined) {
-        result = {
-          type: "history",
-          content: JSON.parse(result),
-        };
-        result = JSON.stringify(result);
-      }
-      return result;
-    } catch (error) {
-      console.log(result);
-      console.log(error);
-      this.sendNotification({
-        type: "error",
-        content: "Cannot load the history, reload and try later please",
-        isNotify: false,
-      });
-    }
+    // try {
+    //   if (JSON.parse(result).content == undefined) {
+    //     result = {
+    //       type: "history",
+    //       content: JSON.parse(result),
+    //     };
+    //     result = JSON.stringify(result);
+    //   }
+    //   return result;
+    // } catch (error) {
+    //   console.log(result);
+    //   console.log(error);
+    //   this.sendNotification({
+    //     type: "error",
+    //     content: "Cannot load the history, reload and try later please",
+    //     isNotify: false,
+    //   });
+    // }
+    console.log("loadData");
   },
 
   // realize the change of theme color

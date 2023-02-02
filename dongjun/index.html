@@ -3,7 +3,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>whatsapp</title>
+  <title>SUPERPORTAL</title>
   <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 
@@ -23,9 +23,9 @@
       
       <div class="header">
         <div class="close_button">
-          <button class="red_button"></button>
-          <button class="yellow_button"></button>
-          <button class="green_button"></button>
+          <button class="red_button" style="display: none;"></button>
+          <button class="yellow_button" style="display: none;"></button>
+          <button class="green_button" style="display: none;"></button>
         </div>
         <div class="setting">
           <div class="userimg"><img src="./image/user0.jpg" class="cover" id="userProfile"></div>
@@ -36,8 +36,7 @@
             <li class="dropdown">
               <ion-icon name="chevron-down-outline"
                 onclick="javascript:document.getElementById('dropdown-content').style.display=='block'?document.getElementById('dropdown-content').style.display='none':document.getElementById('dropdown-content').style.display='block'"></ion-icon>
-              <input type="color" onchange="chat.handleColorChange()" id="color" value="#dcf8c6" style="
-        display: none;">
+              <input type="color" onchange="chat.handleColorChange()" id="color" value="#dcf8c6" style="display: none;">
               <div class="dropdown-content" id="dropdown-content">
                 <a><label for="color">Theme color</label></a><br>
                 <a onclick="javascript:document.getElementById('profile').style.display=='block'?document.getElementById('profile').style.display='none':document.getElementById('profile').style.display='block'">Change profile</a> <br>
@@ -85,7 +84,7 @@
       </div>
       <!-- chatBox begin, most important part -->
       <div class="chatBox" id="chatBoxArea">
-        <img class="background" src="./image/background.png" id="background"></img>
+        <!--<img class="background" src="./image/pixelportal1.png" id="background"></img>-->
       </div>
       <!-- chatBox end -->
       <!-- image upload begin -->
@@ -144,6 +143,12 @@
       </div>
       <!-- rightSide end -->
     </div>
+  </div>
+  <canvas id="Universe" width="512" height="512"></canvas>
+  <div id="EnterApp">
+    <img id="LandingImg" src="./image/pixelportal1.png">
+    <button id="Start">Welcome</button>
+  </div>
 
     <!-- script begin -->
     
@@ -151,6 +156,8 @@
     <script src="./js/main.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/canvas.js"></script>
     <!-- script end -->
 </body>
 

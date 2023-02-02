@@ -1,10 +1,17 @@
 /* define variable */
 :root {
     --theme-color: #dcf8c6;
+    --portal-color: darkblue;
     --font-color: black;
 }
 
 /* initialize */
+html,body {
+    width:100%;
+    height:100%;
+    overflow: hidden;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -19,7 +26,36 @@ body {
     align-items: center;
     min-height: 100vh;
     min-width: 1280px;
-    background: linear-gradient(var(--theme-color) 0%, var(--theme-color) 130px, #d9dbd5 130px, #d9dbd5 100%);
+    background: linear-gradient(var(--portal-color) 0%, var(--portal-color) 130px, #d9dbd5 130px, #d9dbd5 100%);
+}
+
+#EnterApp
+{
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #031a2e;
+    left: 0px;
+}
+
+#Universe {
+    position:absolute;
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+    left: 0px;
+    border:1px solid #000000;
+}
+
+#Start {
+    height:fit-content;
+    width: auto;
+    position: absolute;
+    top: 50%;
+    border-radius: 5px;
+    padding: 10px;
 }
 
 a {
@@ -165,7 +201,7 @@ a {
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 999;
     text-align: end;
-
+    padding:6px;
 }
 
 .dropdown-content a {

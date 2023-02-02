@@ -9,6 +9,7 @@ const chat = {
   onlineNum: 0,
   msgType: "text",
   msgInput: null,
+  welcomeButton: null,
   roomInfo: null,
   privateUser: [],
   currentGroup: "",
@@ -20,7 +21,6 @@ const chat = {
   chatBox_input: null,
   checkbox: null,
   // isLoaded: true,
-
   isNotify: true,
   data: [
     // {
@@ -35,6 +35,7 @@ const chat = {
     //     }]
     // }
   ],
+  
   // init the data binded.
   init: function () {
     // this.server = new WebSocket(this.url);
@@ -44,8 +45,10 @@ const chat = {
     this.background = document.getElementById("background");
     this.rightHeader = document.getElementById("rightHeader");
     this.chatBoxArea = document.getElementById("chatBoxArea");
+    this.welcomeButton = document.querySelector("#Start");
     // this.server.on_user_connected = this.onConnect.bind(this);
     // this.server.on_user_disconnected = this.onLeave.bind(this);
+    this.welcomeButton.addEventListener("click", this.onWelcomeClick.bind(this))
     this.checkbox = document.getElementsByName("userSelected");
     this.chatListArea = document.getElementById("chatListArea");
     this.chatBox_input = document.getElementById("chatBox_input");
@@ -54,6 +57,12 @@ const chat = {
     // this.startLoading.bind(this);
     // this.startLoading();
     // this.connectToServer();
+  },
+
+
+  onWelcomeClick: function ( event ) {
+    var welcome = document.querySelector('#EnterApp');
+    welcome.style.display = 'none';
   },
   // first step, need you input the username and get all the room names
   // startLoading: async function () {
@@ -379,7 +388,7 @@ const chat = {
   },
   // cancel the illustration of basic DOM element
   basicRender: function () {
-    this.background.style.display = "none";
+    //this.background.style.display = "none";
     this.chatBox_input.style.display = "flex";
     this.rightHeader.style.display = "flex";
     document.getElementById("table").style.display = "none";

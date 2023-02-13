@@ -1,0 +1,441 @@
+/*@media (max-width:1200px) {*/
+
+* {
+  font-family: Helvetica, Arial, sans-serif;
+  margin:0;
+  padding:0;
+}
+
+html,body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: rgb(166, 204, 195);
+  height: 95%;
+  width: 90%;
+  margin: auto;
+}
+
+div {
+  background-color: transparent;
+  height: 100%;
+}
+
+div#main {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+}
+
+#Universe {
+  /*position:absolute;*/
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
+  top: 0px;
+  border:1px solid #000000;
+  /*display: none;*/
+}
+
+#EnterApp
+{
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #031a2e;
+    left: 0px;
+    top: 0px;
+    display: none;
+}
+
+#Start {
+  height:fit-content;
+  width: auto;
+  position: absolute;
+  top: 50%;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.fill {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(64, 74, 82);
+  height:auto;
+}
+
+#myprofile {
+  text-align: center;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+button {
+  background-color: grey;
+  color:aliceblue;
+  border: 1px;
+  width: auto;
+  padding: 5px 5px 5px 5px;
+}
+
+button:focus {
+  background-color:rgb(204, 202, 202);
+  color:rgb(78, 86, 93);
+}
+
+.usersButton {
+  width: 30px;
+  border-radius: 30px;
+  background: #ebe8e8;
+}
+
+.onlineUsersHeader {
+  height: 15.5px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  font-size: 10pt;
+  padding: 3px 5px 3px 5px;
+}
+
+.listOnlineUsers {
+  height: auto;
+  overflow: auto;
+}
+
+
+.onlineUsers {
+  height: auto;
+  background-color: rgb(6, 43, 167);
+  color: white;
+  text-align: left;
+  font-size: 10pt;
+  padding: 5px 5px 5px 5px;
+  border-top: 1px solid yellow;
+}
+
+#history {
+  flex: 0 0 300px;
+  height: 100%;
+  background-color: rgb(216, 210, 202);
+  display: flex;
+  flex-direction: column;
+}
+
+.hpreview {
+  display: flex;
+  align-items: flex-start;
+  justify-content:space-between;
+  height: 72px;
+  text-align: left;
+  background-color: azure;
+  border-top: 1px solid red;
+}
+
+.previewbox {
+  width: 225px;
+  height:auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  margin-right: 1%;
+}
+
+.messageprev {
+  font-size: small;
+  color: rgb(108, 105, 105);
+  padding: 2%;
+  height:15.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+p {
+  margin:0;
+}
+
+.contactname {
+  padding:2%;
+  padding-bottom: 0;
+}
+
+.histlist {
+  height: 100%;
+  background-color: rgb(131, 132, 136);
+  overflow: auto;
+}
+
+.histlist.lobby {
+  position: absolute;
+  width: 300px;
+  max-height: calc(95% - 62px - 51.5px);
+  top: calc(62px + 45.5px);
+}
+
+#messages {
+  flex: 1 1 auto;
+  border-left: 1px solid rgb(95, 2, 2);
+  background-color: rgb(44, 42, 58);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  /*display: none;*/
+}
+
+h1 {
+  width: 100%;
+  cursor: pointer;
+  background-color: rgb(89, 89, 131);
+}
+
+h3 {
+  font-weight: 500;
+}
+
+img {
+  object-fit: cover;
+}
+
+.profilepic {
+  vertical-align: middle;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.light {
+  width: 20px;
+  height:20px;
+  position: relative;
+  top: 20px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.icons {
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.chatroom {
+  background-color: darkblue;
+  color: gainsboro;
+}
+
+.roomprev {
+  color: yellow;
+}
+
+.toolbarhist {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  height:62px;
+  min-height:62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
+  background-color: slateblue;
+}
+
+.toolbarmess {
+  display: flex;
+  align-items: flex-start;
+  /*justify-content:space-between;*/
+  height:62px;
+  min-height:62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
+  background-color: slateblue;
+  /*display: none;*/
+}
+
+.groupinfo {
+  color:rgb(32, 31, 31);
+}
+
+.righticons {
+  width: 20px;
+  height:20px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+
+
+.lefticons {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  margin-left: 1%;
+  cursor: pointer;
+}
+
+
+#conversation {
+  overflow: auto;
+  overflow-anchor: none;
+  height: 100%;
+  display: grid;
+  align-content: flex-start;
+  width: 100%;
+  gap: 0.6rem;
+  padding-bottom: 10px;
+  /*display: none;*/
+}
+
+.currentcontact {
+  width: auto;
+  height:auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  width: 505px;
+  margin-left: 2%;
+  cursor: pointer;
+  display: flex;
+}
+
+.received {
+  max-width: 350px; 
+  width: auto;
+  height: fit-content;
+  text-align: left;
+  justify-self: left;
+  background-color: lightblue;
+  margin-top: 22px;
+  margin-left: 15px;
+  padding: 7px;
+  border-radius: 0 0.5rem 0.5rem 0.5rem;
+  overflow-wrap: break-word;
+}
+
+.sent {
+  max-width: 350px; 
+  width: auto; 
+  height: fit-content;
+  text-align: left;
+  justify-self: right;
+  background-color: lightgreen;
+  margin-top: 22px;
+  margin-right: 15px;
+  padding: 7px;
+  border-radius: 0.5rem 0.5rem 0 0.5rem;
+  /*white-space: pre-line;*/
+  overflow-wrap: break-word;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  margin:0;
+  border:0;
+  padding-top:5px;
+  padding-bottom: 5px;
+  padding-right:10px;
+  padding-left:10px;
+}
+
+#typesendmsg {
+  display: flex;
+  align-items: flex-start;
+  justify-content:space-evenly;
+  width: auto;
+  padding-left: 10px;
+}
+
+.sendmessage {
+  width:50px;
+  cursor: pointer;
+  border-radius: 3px;
+  background-color: transparent;
+  color:aliceblue;
+  font-weight: 800;
+}
+
+.currentmessage {
+  display: block;
+  overflow:auto;
+  resize: none;
+  width: 93%;
+  margin: 0;
+  height: 25.5px;
+  background-color: white;
+  padding-left: 8px;
+  line-height: 25.5px;
+  font-size: 11pt;
+  white-space: normal;
+  border-radius: 3px;
+}
+
+.currentmessage[contenteditable]:empty::before {
+  content: "Type a message";
+  color: gray;
+}
+
+.joinleft {
+  border-radius: 5rem;
+  background-color: darkorange;
+  color: black;
+  height: 15px;
+  max-width: 600px;
+  width: fit-content;
+  padding: 4px 10px 4px 10px;
+  justify-self: center;
+  margin-top: 22px;
+}
+
+.username {
+  font-size:10pt;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+
+.myusername {
+  display: none;
+}
+
+.publishedmsg {
+  font-size:11pt;
+}
+
+.private.publishedmsg {
+  font-style: italic;
+}
+
+.sysmsg.publishedmsg {
+  font-size: 9pt;
+}
+
+.fade-out {
+  animation: fadeOut ease 5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/*}*/

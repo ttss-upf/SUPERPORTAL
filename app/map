@@ -1,0 +1,30 @@
+{
+    "name": "Pirate",
+    "url": "./image/pirate_island.png",
+    "id": 0,
+    "people": [],
+    "range": [
+        -300,
+        300
+    ],
+    "exits": [
+        -30,
+        -60
+    ],
+    "leadsTo": "Beach"
+},
+{
+    "name": "Beach",
+    "url": "./image/beach_night.png",
+    "id": 1,
+    "people": [],
+    "range": [
+      -300,
+      300
+    ],
+    "exits": [
+      -285,
+      80
+    ],
+    "leadsTo": "Pirate"
+  },

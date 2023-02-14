@@ -122,37 +122,22 @@ var mychat = {
     //if (this.server.loadData)
     //    { this.server.loadData(this.myspace.my_room, this.loadHistory.bind(this)); }
     msg = {
-      content:
-        "Welcome to " +
-        this.myspace.my_room +
-        ", " +
-        this.myspace.my_username +
-        ". Your user ID is " +
-        user_id +
-        ".",
+      content: "Welcome to Super Portal, " + this.myspace.my_username,
       username: "system message",
       type: "sysmsg",
       timestamp: new Date().toTimeString().slice(0, 5),
     };
     this.showText(msg, "joinleft");
-    msg = {
-      content:
-        "To send a private message to users, start with '@user_ID', eg.: '@1405 @6203 Hello'",
-      username: "system message",
-      type: "sysmsg",
-      timestamp: new Date().toTimeString().slice(0, 5),
-    };
-    this.showText(msg, "joinleft");
+    // msg = {
+    //   content:
+    //     "To send a private message to users, start with '@user_ID', eg.: '@1405 @6203 Hello'",
+    //   username: "system message",
+    //   type: "sysmsg",
+    //   timestamp: new Date().toTimeString().slice(0, 5),
+    // };
+    // this.showText(msg, "joinleft");
     this.myspace.my_userid = user_id;
 
-    //clients_info = this.server.clients[user_id.toString()];
-    //L2N = { ...clients_info, username: this.myspace.my_username};
-    //this.LinkIDtoName.push(L2N);
-    //console.log(L2N);
-    //this.ShowUsersInThisRoom();
-    //display effects
-    light = document.querySelector(".light");
-    light.style.backgroundColor = "green";
     button = document.querySelector(".connectButton");
     button.innerHTML = "reset";
   },

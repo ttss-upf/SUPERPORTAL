@@ -13,15 +13,15 @@
             <div id="history">
                 <div class="toolbarhist">
                     <!--<h2>History of conversations</h2>-->    
-                    <div class="lefticons">
+                    <!-- <div class="lefticons">
                         <img src="./images/" class="profilepic">
-                    </div>
+                    </div> -->
                     <div id="myprofile">
-                        <h3>Navigator</h3>
+                        <h3>SPACE CUSTOMIZATION</h3>
                     </div>
-                    <div id="connectionStatus">
+                    <!-- <div id="connectionStatus">
                         <img class="light">
-                    </div>
+                    </div> -->
                     <div class="righticons">
                         <img src="./images/3dots.png" class="icons">
                     </div>
@@ -35,50 +35,52 @@
                 <button class="usersButton">&#127968;</button>
                 </div>
                 <div class="histlist">
-                <!--List of all saved/previous conversations-->
-                    <div class="hpreview privateconv" style="display: none;">
-                        <div class="lefticons">
-                            <img src="./images/fembot_profilepic.jpeg" class="profilepic">
-                        </div>
-                        <div class="previewbox">
-                            <p id="roomName" class="contactname"></p>
-                            <p class="messageprev">This is a preview of the last message</p>
+                <!--History of chat-->
+                <div id="messages">
+                    <div class="toolbarmess">
+                        <div class="currentcontact">      
+                            <h3 id="roomName">CHAT</h3>
                         </div>
                     </div>
-                    <div class="onlineUsersHeader" style="display: none;">
-                        <p >Users connected to this room</p>
-                    </div>
-                    <div class="listOnlineUsers">
-                        <div class="onlineUsers" style="display: none;">
-                            <p>User 1</p>
+                    <div id="conversation">
+                        <!--Actual conversation, new content dynamically added here (scrollable)-->
+                        <div class="joinleft" style="display: none">
+                            <div class="username" style="display: none">system message</div>
+                            <div class="publishedmsg sysmsg" style="display: none">
+                                lastu joined the room
+                            </div>
                         </div>
+                        <div class="received" style="display: none">
+                            <div class="username" style="display: none">Fembot111</div>
+                            <div class="publishedmsg" style="display: none">this is a message I received from someone</div>
+                        </div>
+                        <div class="sent" style="display: none">
+                            <div class="myusername" style="display: none">lastuadri</div>
+                            <div class="publishedmsg" style="display: none">hi</div>
+                        </div>
+                    </div>
+                    
+                    <div class="fill" id="typesendmsg">
+                    <textarea class="currentmessage" type="text" placeholder="type a message"></textarea>
+                    <input id="sendbutton" class="sendmessage" type="button" value="send">
                     </div>
                 </div>
-                <div class="histlist lobby" style="display: none;">
-                    <div class="hpreview privateconv">
-                        <div class="lefticons">
-                            <img src="./images/fembot_profilepic.jpeg" class="profilepic">
-                        </div>
-                        <div class="previewbox">
-                            <p id="roomName" class="contactname"></p>
-                            <p class="messageprev">This is a preview of the last message</p>
-                        </div>
-                    </div>
+
                 </div>
             </div>
-            <div id="messages">
+            <!-- <div id="messages">
                 <div class="toolbarmess">
                     <div class="lefticons">
                         <img src="./images/fembot_profilepic.jpeg" class="profilepic">
                     </div>
-                    <div class="currentcontact">      
-				        <h3 id="roomName">Connect to chat and view current rooms in lobby</h3>
-                        <p class="groupinfo fade-out" style="display: none;">Click here for room info</p>
+                    <div class="currentcontact">       -->
+				        <!-- <h3 id="roomName">Connect to chat and view current rooms in lobby</h3> -->
+                        <!-- <p class="groupinfo fade-out" style="display: none;">Click here for room info</p>
                     </div>
                 </div>
-                <div id="conversation">
+                <div id="conversation"> -->
                     <!--Actual conversation, new content dynamically added here (scrollable)-->
-                    <div class="joinleft" style="display: none">
+                    <!-- <div class="joinleft" style="display: none">
                         <div class="username" style="display: none">system message</div>
                         <div class="publishedmsg sysmsg" style="display: none">
                             lastu joined the room
@@ -98,7 +100,7 @@
                 <textarea class="currentmessage" type="text" placeholder="type a message"></textarea>
                 <input id="sendbutton" class="sendmessage" type="button" value="send">
                 </div>
-            </div>
+            </div> -->
             
         </div>
 
@@ -121,7 +123,6 @@
         <script src="./app/model.js"></script>
         <script src="./app/view.js"></script>
         <script src="./app/controller.js"></script>
-        <!-- <script src="./app/app.js"></script> -->
     </body>
     
 </html>

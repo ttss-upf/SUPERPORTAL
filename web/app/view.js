@@ -31,8 +31,8 @@ var View = {
   draw: function (current_room) {
     var parent = this.canvas.parentNode;
     var rect = parent.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
+    this.canvas.width = rect.width-400;
+    this.canvas.height = 0.97*rect.height;
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();

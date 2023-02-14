@@ -91,6 +91,7 @@ var MYAPP = {
             this.current_room = WORLD.rooms[index];
             this.my_user.room = this.current_room.name;
             this.current_room.addUser(this.my_user);
+            mychat.ShareRoomWelcome(this.current_room);
           }
           else
             break;

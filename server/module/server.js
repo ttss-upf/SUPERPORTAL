@@ -57,6 +57,7 @@ module.exports = (app) => {
             user_list: this.user_list,
           };
           this.broadCast(data, connection, true);
+          //this.broadCast(data, connection, false, [data.user_id]);
         }
       });
     },

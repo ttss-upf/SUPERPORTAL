@@ -62,13 +62,14 @@ var mychat = {
     this.textarea = document.querySelector("textarea");
     this.ConnectButton = document.querySelector(".connectButton");
     this.LobbyButton = document.querySelector(".lobbyButton");
-    this.RoomButton = document.querySelector(".roomsButton");
+    this.WeatherButton = document.querySelector(".weatherButton");
     this.UsersButton = document.querySelector(".usersButton");
     this.sendbutton = document.querySelector("#sendbutton");
     this.input_username = document.querySelector("#input_username");
     this.input_password = document.querySelector("#input_password");
 
     this.LoginButton.addEventListener("click", this.onLoginClick.bind(this));
+    this.WeatherButton.addEventListener("click", this.onWeatherClick.bind(this));
     this.textarea.addEventListener( "keydown", this.onKeyPressed.bind(this, "3") ); // send message on Enter
     this.sendbutton.onclick = this.onKeyPressed.bind(this, "1"); // send message on "send" button click
   },
@@ -110,6 +111,23 @@ var mychat = {
       });
   },
 
+  onLogoutClick: function () {
+
+  },
+
+  onWeatherClick: function ()
+  {
+    button = this.WeatherButton;
+    if (button.innerHTML == "weather toggle")
+      button.innerHTML = "snow";
+    else if (button.innerHTML == "snow")
+      button.innerHTML = "rain";
+    else if (button.innerHTML == "rain")
+      button.innerHTML = "sunny";
+    else if (button.innerHTML == "sunny")
+      button.innerHTML = "snow";
+  },
+
   Connect: function () {
     // our server
     this.server = new WebSocket("ws://localhost:9022/" + this.myspace.my_room);
@@ -138,8 +156,8 @@ var mychat = {
     // this.showText(msg, "joinleft");
     this.myspace.my_userid = user_id;
 
-    button = document.querySelector(".connectButton");
-    button.innerHTML = "reset";
+    // button = document.querySelector(".connectButton");
+    // button.innerHTML = "reset";
   },
 
   RoomEnter: function (user_id) {
@@ -166,7 +184,7 @@ var mychat = {
 
   ConnectionKilled: function () {
     msg = {
-      content: "Server has shutdown.",
+      content: "You've successfully logged out.",
       username: "system message",
       type: "sysmsg",
       timestamp: new Date().toTimeString().slice(0, 5),
@@ -184,6 +202,7 @@ var mychat = {
       //    { obj.user_id = user_id; }
       //obj.userid = user_id;
       if (obj.type == "login") this.ShareID(obj.user_id);
+      else if (obj.type == "leftroom" && obj.user_id == this.myspace.my_userid) this.ConnectionKilled();
       else if (obj.type == "leftroom") this.RoomLeave(obj.user_id);
       else if (obj.type == "joinedroom") this.RoomEnter(obj.user_id);
       else if (obj.type == "text") this.showText(obj, "received");
@@ -309,6 +328,25 @@ var mychat = {
 
       this.textarea.value = "";
     }
+  },
+
+  ShareRoomWelcome: function (room)
+  {
+    msg = {
+      content: "",
+      username: "system message",
+      type: "sysmsg",
+      timestamp: new Date().toTimeString().slice(0, 5),
+    };
+
+    switch (room.name) {
+      case "Beach":
+        msg.content = "You've made it to the Beach! If you're hungry, help yourself to an apple. Don't forget to sit back and stargaze!"
+        break;
+      case "Pirate":
+        msg.content = "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!"
+    }
+    this.showText(msg, "joinleft");
   },
 
 };

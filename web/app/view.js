@@ -88,6 +88,7 @@ var View = {
       }
     }
   },
+
   update: function () {
     this.angle += 0.01;
     for (var i = 0; i < this.particles.length; i++) {
@@ -172,6 +173,31 @@ var View = {
     //draw exits
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(current_room.exits[0], current_room.exits[1], 5, 5);
+
+    //draw interactive objects
+    if (current_room.objects){
+      Object.values(current_room.objects).forEach(val => {
+        centroid = val.centroid;
+        size = val.size;
+        switch (size) {
+          case "small":
+            size = 10;
+            break;
+          case "medium":
+            size = 25;
+            break;
+          case "big":
+            size = 50;
+            break;
+        }
+        this.ctx.beginPath();
+        this.ctx.arc(centroid[0], centroid[1], size, 0, 2 * Math.PI);
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = 'pink';
+        this.ctx.stroke();
+        this.ctx.closePath();
+      });
+    }
   },
 
   gait_animations: {

@@ -18,6 +18,7 @@ var MYAPP = {
     this.fetchData().then(() => {
       console.log(WORLD);
       that.current_room = WORLD.getRoom("Pirate");
+      mychat.ShareRoomWelcome(that.current_room);
       console.log(that.current_room);
       //that.my_user = new User();
       if (mychat.myspace.my_user)
@@ -49,14 +50,7 @@ var MYAPP = {
         for (var ele in data) {
           WORLD.createRoom(data[ele].name, data[ele]);
         }
-      });
-    // await fetch(this.url + "load/user_list")
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     for (var ele in data) {
-    //       WORLD.createUser(data[ele]);
-    //     }
-    //   });
+      })
   },
 
   //function that should be used to modify the state of my application
@@ -82,6 +76,7 @@ var MYAPP = {
         this.my_user.gait = "walking";
       }
 
+      //update current room when exit
       while (isIntersect(this.my_user.target, this.current_room.exits)) 
         {
           if (isClose(this.my_user.position, this.current_room.exits[0]))
@@ -96,6 +91,24 @@ var MYAPP = {
           else
             break;
         }
+      
+      //generate reaction when interacting
+      if(this.current_room.objects)
+      {
+        Object.values(this.current_room.objects).forEach(val => {
+          var inter = isInteract(this.my_user.target, val);
+          while (inter == true) 
+          {
+            if (isClose(this.my_user.position, val.centroid[0]))
+            {
+              inter = false;
+              console.log("you just interacted!");
+            }
+            else
+              break;
+          }
+        });
+      }
 
       //this.cam_offset = -this.my_user.position;
       this.cam_offset = lerp(this.cam_offset, -this.my_user.position, 0.025);
@@ -114,6 +127,7 @@ var MYAPP = {
         var localmouse = View.canvasToWorld(mouse_pos);
         this.my_user.target[0] = localmouse[0];
         this.my_user.target[1] = localmouse[1];
+        console.log(this.my_user.target);
       } 
     else if (e.type == "mousemove") 
       {
@@ -129,13 +143,7 @@ var MYAPP = {
         this.my_user.action = "none";
       else this.my_user.action = "crouchdown";
     }
-
-    //if (e.key == "Escape")
-    //this.current_room.removeUser (this.my_user);
-    //this.current_room = Beach;
-    //this.my_user.room = "Beach";
-    //this.current_room.addUser(this.my_user);
-  },
+  }
 };
 
 //MYAPP.init();

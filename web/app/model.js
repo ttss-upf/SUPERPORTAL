@@ -20,6 +20,7 @@ function Room(obj) {
   this.online_num = obj.online_num || null;
   this.weather = obj.weather || null;
   this.default = obj.default || null;
+  this.objects = obj.objects || null;
 }
 
 Room.prototype.addUser = function (user) {

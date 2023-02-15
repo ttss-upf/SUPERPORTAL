@@ -51,6 +51,7 @@ var mychat = {
   OnlineRooms: null,
   UsersInThisRoom: null,
   LoginButton: null,
+  LogoutButton: null,
   input_username: null,
   input_password: null,
   server: null,
@@ -60,7 +61,7 @@ var mychat = {
     this.LoginButton = document.querySelector("#login");
     this.window = document.querySelector("#main");
     this.textarea = document.querySelector("textarea");
-    this.ConnectButton = document.querySelector(".connectButton");
+    this.LogoutButton = document.querySelector(".connectButton");
     this.LobbyButton = document.querySelector(".lobbyButton");
     this.WeatherButton = document.querySelector(".weatherButton");
     this.UsersButton = document.querySelector(".usersButton");
@@ -69,6 +70,7 @@ var mychat = {
     this.input_password = document.querySelector("#input_password");
 
     this.LoginButton.addEventListener("click", this.onLoginClick.bind(this));
+    this.LogoutButton.addEventListener("click", this.onLogoutClick.bind(this));
     this.WeatherButton.addEventListener("click", this.onWeatherClick.bind(this));
     this.textarea.addEventListener( "keydown", this.onKeyPressed.bind(this, "3") ); // send message on Enter
     this.sendbutton.onclick = this.onKeyPressed.bind(this, "1"); // send message on "send" button click
@@ -112,7 +114,8 @@ var mychat = {
   },
 
   onLogoutClick: function () {
-
+    this.server.close();
+    this.ConnectionKilled();
   },
 
   onWeatherClick: function ()
@@ -202,7 +205,7 @@ var mychat = {
       //    { obj.user_id = user_id; }
       //obj.userid = user_id;
       if (obj.type == "login") this.ShareID(obj.user_id);
-      else if (obj.type == "leftroom" && obj.user_id == this.myspace.my_userid) this.ConnectionKilled();
+      //else if (obj.type == "leftroom" && obj.user_id == this.myspace.my_userid) this.ConnectionKilled();
       else if (obj.type == "leftroom") this.RoomLeave(obj.user_id);
       else if (obj.type == "joinedroom") this.RoomEnter(obj.user_id);
       else if (obj.type == "text") this.showText(obj, "received");

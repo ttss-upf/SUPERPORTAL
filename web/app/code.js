@@ -312,7 +312,8 @@ var mychat = {
       //   } else {
       s_msg = JSON.stringify(msg);
       this.server.send(s_msg);
-      this.server.send(JSON.stringify(state))
+      this.server.send(JSON.stringify(state));
+      MYAPP.OnUserSpeak(msg);
       this.mydatabase.content.push(msg);
       this.showText(msg, "sent");
 

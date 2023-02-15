@@ -203,6 +203,7 @@ var View = {
   gait_animations: {
     idle: [0],
     walking: [2, 3, 4, 5, 6, 7, 8, 9],
+    jumping: [1, 11, 12, 11, 1],
   },
 
   action_animations: {
@@ -218,7 +219,7 @@ var View = {
   drawBubble: function (x, y, msg) {
     //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
     text = msg.content;
-    username = msg.userame;
+    username = msg.username;
     this.ctx.font = "8px Helvetica";
     this.ctx.fillStyle = "white";
     this.ctx.strokeStyle = "black";
@@ -228,9 +229,9 @@ var View = {
     radius = 5;
 
     //set bubble animation
-    var bubble_anim = makeArr(0, this.canvas.height + h, 60);
-    var time = performance.now() * 0.001;
-    y += -bubble_anim[Math.floor(time)];
+    // var bubble_anim = makeArr(0, this.canvas.height + h, 60);
+    // var time = performance.now() * 0.001;
+    // y += -bubble_anim[Math.floor(time)*10];
 
     var r = x + w;
     var b = y + h;
@@ -246,11 +247,13 @@ var View = {
     this.ctx.quadraticCurveTo(x, b, x, b - radius);
     this.ctx.lineTo(x, y + radius);
     this.ctx.quadraticCurveTo(x, y, x + radius, y);
+    this.ctx.closePath();
     this.ctx.fill();
     this.ctx.stroke();
     this.ctx.fillStyle = "#000";
     this.ctx.fillText(username + text, x + 10, y + 10);
-  },
+  
+},
 
 
   drawUser: function (user) {
@@ -279,7 +282,7 @@ var View = {
     else if (user.action == "talking" && user.gait == "idle") 
       { 
         this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
-      //this.drawBubble(this.ctx, user.position, 80, this.ctx.measureText(text).width + 40, 50, 20, text);
+        //this.drawBubble(user.position, -50, msg);
       } 
     else if (user.gait) 
       { 

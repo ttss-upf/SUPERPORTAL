@@ -14,6 +14,7 @@ var MYAPP = {
   clickableCanvas: null,
   url: "http://localhost:9022/",
   init: function () {
+
     var that = this;
     this.fetchData().then(() => {
       console.log(WORLD);
@@ -35,7 +36,9 @@ var MYAPP = {
     document.body.addEventListener("keyup", this.onKey.bind(this));
     this.canvas = document.querySelector("canvas");
     this.ctx = this.canvas.getContext("2d");
+
     View.init(this.canvas, this.ctx);
+
   },
 
   draw: function () {
@@ -56,8 +59,13 @@ var MYAPP = {
   //function that should be used to modify the state of my application
   update: function (dt) {
     if (this.my_user) {
-      //var room = this.my_user.room;
+
       var room = this.current_room;
+
+      //update state if interacting with environment objects
+      var interaction = this.onUserInteract();
+
+      //updating user position according to target
       this.my_user.target[0] = clamp( this.my_user.target[0], room.range[0], room.range[1] );
       var diff = this.my_user.target[0] - this.my_user.position;
       var delta = diff;
@@ -69,52 +77,74 @@ var MYAPP = {
         this.my_user.position = this.my_user.target[0];
       } else this.my_user.position += delta * dt;
 
-      if (delta == 0) this.my_user.gait = "idle";
+      //updating gait and action
+      if (delta == 0) 
+        {
+          if (!interaction)
+            this.my_user.gait = "idle";
+        }
+      
       else {
         if (delta > 0) this.my_user.facing = FACING_RIGHT;
         else this.my_user.facing = FACING_LEFT;
         this.my_user.gait = "walking";
       }
 
-      //update current room when exit
-      while (isIntersect(this.my_user.target, this.current_room.exits)) 
-        {
-          if (isClose(this.my_user.position, this.current_room.exits[0]))
-          {
-            this.current_room.removeUser(this.my_user);
-            index = WORLD.rooms.findIndex(x => x.name === this.current_room.leadsTo);
-            this.current_room = WORLD.rooms[index];
-            this.my_user.room = this.current_room.name;
-            this.current_room.addUser(this.my_user);
-            mychat.ShareRoomWelcome(this.current_room);
-          }
-          else
-            break;
-        }
-      
-      //generate reaction when interacting
-      if(this.current_room.objects)
+      //update current_room when leaving
+      this.onUserLeave();
+
+      //this.cam_offset = -this.my_user.position;
+      this.cam_offset = lerp(this.cam_offset, -this.my_user.position, 0.025);
+    }
+    // if (keys["ArrowLeft"]) this.cam_offset += dt * 50;
+    // if (keys["ArrowRight"]) this.cam_offset -= dt * 50;
+  },
+
+
+  onUserLeave: function() {
+    while (isIntersect(this.my_user.target, this.current_room.exits)) 
+    {
+      if (isClose(this.my_user.position, this.current_room.exits[0]))
+      {
+        this.current_room.removeUser(this.my_user);
+        index = WORLD.rooms.findIndex(x => x.name === this.current_room.leadsTo);
+        this.current_room = WORLD.rooms[index];
+        this.my_user.room = this.current_room.name;
+        this.current_room.addUser(this.my_user);
+        mychat.ShareRoomWelcome(this.current_room);
+      }
+      else
+        break;
+    }
+  },
+
+
+  onUserInteract: function() {
+    if(this.current_room.objects)
       {
         Object.values(this.current_room.objects).forEach(val => {
-          var inter = isInteract(this.my_user.target, val);
-          while (inter == true) 
+          while (isInteract(this.my_user.target, val)) 
           {
-            if (isClose(this.my_user.position, val.centroid[0]))
+            if (this.my_user.position == this.my_user.target[0])
             {
-              inter = false;
               console.log("you just interacted!");
+                this.my_user.target = [];
+                this.my_user.gait = val.reactionGait;
+                this.my_user.facing = val.reactionFacing; 
+                this.my_user.action = val.reactionAction;
+                return this.my_user.gait;
+                break;          
             }
             else
               break;
           }
         });
       }
+  },
 
-      //this.cam_offset = -this.my_user.position;
-      this.cam_offset = lerp(this.cam_offset, -this.my_user.position, 0.025);
-    }
-    if (keys["ArrowLeft"]) this.cam_offset += dt * 50;
-    if (keys["ArrowRight"]) this.cam_offset -= dt * 50;
+  OnUserSpeak: function(msg) {
+    this.my_user.action = "talking";
+    //View.drawBubble(this.my_user.position, -50, msg);
   },
 
   onMouse: function (e) {

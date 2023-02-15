@@ -83,20 +83,17 @@ var MYAPP = {
       if (delta == 0 && INTERACTION == false) 
         {
             this.my_user.gait = "idle";
-            console.log("just turned " + this.my_user.gait)
         }
       
       else if (delta == 0 && INTERACTION == true) 
       {
           this.my_user.gait;
-          console.log("just turned " + this.my_user.gait)
       }
       
       else {
         if (delta > 0) this.my_user.facing = FACING_RIGHT;
         else this.my_user.facing = FACING_LEFT;
         this.my_user.gait = "walking";
-        console.log("just turned " + this.my_user.gait)
       }
 
       //update current_room when leaving
@@ -139,10 +136,8 @@ var MYAPP = {
               console.log("you just interacted!");
                 this.my_user.target = [];
                 this.my_user.gait = val.reactionGait;
-                console.log("gait just turned " + this.my_user.gait);
                 this.my_user.facing = val.reactionFacing; 
                 this.my_user.action = val.reactionAction;
-                console.log("action just turned " + this.my_user.action);
                 INTERACTION = true;
                 break;          
             }
@@ -186,8 +181,6 @@ var MYAPP = {
     }
   }
 };
-
-//MYAPP.init();
 
 function loop() {
   var now = performance.now();

@@ -166,10 +166,13 @@ var View = {
     //draw target
     radius = 2;
     this.ctx.beginPath();
-    if (!user) {
+    if (!MYAPP.my_user) {
       user = {};
       user.target = [0, 0];
     }
+    else
+    user = MYAPP.my_user;
+    
     this.ctx.arc(user.target[0], user.target[1], radius, 2 * Math.PI, false);
     //console.log("target coordinates" + user.target);
     this.ctx.fillStyle = "yellow";
@@ -203,6 +206,20 @@ var View = {
         this.ctx.closePath();
       });
     }
+
+    //draw speech bubbles
+    if (RENDERMYMSG)
+      {
+      this.drawBubble(user.position, -50, RENDERMYMSG)
+      COUNTER += 1;
+      if (COUNTER > 500)
+      {
+        RENDERMYMSG = null;
+        COUNTER = 0;
+        user.action = "none";
+      }
+      }
+
   },
 
   gait_animations: {
@@ -213,75 +230,47 @@ var View = {
 
   action_animations: {
     talking: [0, 1],
-    //crouchdown: [10, 11],
     crouchdown: [11],
-    //crouchup: [12, 13],
-    //crouchup: [13],
     none: [0],
     sit: [13],
   },
 
   drawBubble: function (x, y, msg) {
     //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
+    text = msg.content;
+    username = msg.username;
+    console.log("msg received for render: " + text + username);
+    w = this.ctx.measureText(username).width + this.ctx.measureText(text).width + 10;
+    h = 15;
+    radius = 5;
+    console.log("begin y at " + y + "x at " + x);
+    var r = x + w;
+    var b = y + h;
 
-    for (let i=0; i<=100; i++)
-    {
-      that = this;
-      animateBubble(i, that)
-    }
-    
-    function animateBubble (i, that) {
-        setTimeout(function(){  
-        text = msg.content;
-        username = msg.username;
-        console.log("msg received for render: " + text + username);
-        w = that.ctx.measureText(text).width + 20;
-        h = 15;
-        radius = 5;
-        console.log("begin y at " + y + "x at " + x);
-        var r = x + w;
-        var b = y + h;
-        y = -50-i;
-
-        //draw bubble
-        that.ctx.beginPath();
-        console.log("begin bubble drawing");
-        that.ctx.font = "7px Helvetica";
-        that.ctx.strokeStyle = "black";
-        that.ctx.lineWidth = "1";
-        that.ctx.moveTo(x + radius, y);
-        that.ctx.lineTo(r - radius, y);
-        that.ctx.quadraticCurveTo(r, y, r, y + radius);
-        that.ctx.lineTo(r, y + h - radius);
-        that.ctx.quadraticCurveTo(r, b, r - radius, b);
-        that.ctx.lineTo(x + radius, b);
-        that.ctx.quadraticCurveTo(x, b, x, b - radius);
-        that.ctx.lineTo(x, y + radius);
-        that.ctx.quadraticCurveTo(x, y, x + radius, y);
-        //that.ctx.closePath();
-        that.ctx.fill();
-        that.ctx.stroke();
-        that.ctx.fillStyle = "#000";
-        that.ctx.fillText(username + text, x + 10, y + 10);
-        console.log("end bubble drawing");
-        console.log(i);
-      }, i*2000);
-      }
-  
-    return;
-
-    //update counter
-    // if (COUNTER == 60)
-    // BUBBLELOOPS += 1;
-  
+    //draw bubble
+    this.ctx.beginPath();
+    console.log("begin bubble drawing");
+    this.ctx.font = "7px Helvetica";
+    this.ctx.strokeStyle = "black";
+    this.ctx.lineWidth = "1";
+    this.ctx.moveTo(x + radius, y);
+    this.ctx.lineTo(r - radius, y);
+    this.ctx.quadraticCurveTo(r, y, r, y + radius);
+    this.ctx.lineTo(r, y + h - radius);
+    this.ctx.quadraticCurveTo(r, b, r - radius, b);
+    this.ctx.lineTo(x + radius, b);
+    this.ctx.quadraticCurveTo(x, b, x, b - radius);
+    this.ctx.lineTo(x, y + radius);
+    this.ctx.quadraticCurveTo(x, y, x + radius, y);
+    this.ctx.fillStyle = "white";
+    this.ctx.fill();
+    this.ctx.stroke();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText(username + ": " + text, x + 10, y + 10);
+    console.log("end bubble drawing");
 },
 
-
   drawUser: function (user) {
-    var msg = {
-      content: "hello test testtest test test test test test",
-      username: user.name,
-    }
     if (!user.avatar) return;
 
     var gait_anim = this.gait_animations[user.gait];

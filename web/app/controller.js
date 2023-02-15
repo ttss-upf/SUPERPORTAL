@@ -155,7 +155,7 @@ var MYAPP = {
 
   OnUserSpeak: function(msg) {
     this.my_user.action = "talking";
-    //View.drawBubble(this.my_user.position, -50, msg);
+    //return msg; // we just testing, but we should receive msgs differently.
   },
 
   onMouse: function (e) {

@@ -1,3 +1,5 @@
+var RENDERMYMSG = null; // bad, just testing something
+
 var room_list = {
   Pirate: {
     name: "Pirate",
@@ -304,7 +306,9 @@ var mychat = {
       this.server.send(s_msg);
       this.server.send(JSON.stringify(state));
       MYAPP.OnUserSpeak(msg);
-      View.drawBubble(this.myspace.my_user.position, -50, msg);
+      RENDERMYMSG = msg;
+      //View.drawBubble(this.myspace.my_user.position, -50, msg);
+      //View.scribble();
       this.mydatabase.content.push(msg);
       this.showText(msg, "sent");
 

@@ -2,7 +2,7 @@
   {
     "name": "Pirate",
     "url": "./images/pirate_island.png",
-    "welcome_msg": "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!",
+    "welcome_msg": "This is Pirates' Bay. They say curiosity killed the cat. Don't get too wise, you might not get away with it!",
     "id": 0,
     "online_num": 0,
     "weather": "snow",

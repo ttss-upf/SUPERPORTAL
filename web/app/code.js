@@ -6,18 +6,7 @@ var room_list = {
     online_num: 0,
     weather: "snow",
     default: true,
-    people: [
-      // {
-      //   position: 79.69921875,
-      //   avatar: "./images/character1.png",
-      //   name: "username",
-      //   facing: 0,
-      //   gait: "idle",
-      //   action: "none",
-      //   target: [79.69921875, 70.1015625],
-      //   room: "Pirate",
-      // },
-    ],
+    people: [],
     range: [-300, 300],
     exits: [-30, -60],
     leadsTo: "Beach",
@@ -35,6 +24,7 @@ var room_list = {
     leadsTo: "Pirate",
   },
 };
+
 var mychat = {
   url: "http://localhost:9022/",
   window: null,
@@ -314,6 +304,7 @@ var mychat = {
       this.server.send(s_msg);
       this.server.send(JSON.stringify(state));
       MYAPP.OnUserSpeak(msg);
+      View.drawBubble(this.myspace.my_user.position, -50, msg);
       this.mydatabase.content.push(msg);
       this.showText(msg, "sent");
 
@@ -337,19 +328,12 @@ var mychat = {
   ShareRoomWelcome: function (room)
   {
     msg = {
-      content: "",
+      content: room.welcome_msg,
       username: "system message",
       type: "sysmsg",
       timestamp: new Date().toTimeString().slice(0, 5),
     };
 
-    switch (room.name) {
-      case "Beach":
-        msg.content = "You've made it to the Beach! If you're hungry, help yourself to an apple. Don't forget to sit back and stargaze!"
-        break;
-      case "Pirate":
-        msg.content = "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!"
-    }
     this.showText(msg, "joinleft");
   },
 

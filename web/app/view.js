@@ -1,3 +1,8 @@
+//var FIRSTLOOP = true;
+var LOOPS = 0;
+var BUBBLELOOPS = 0;
+var COUNTER = 0;
+
 var View = {
   canvas: null,
   ctx: null,
@@ -203,7 +208,7 @@ var View = {
   gait_animations: {
     idle: [0],
     walking: [2, 3, 4, 5, 6, 7, 8, 9],
-    jumping: [1, 11, 12, 11, 1],
+    jumping: [0, 11, 12, 11, 0],
   },
 
   action_animations: {
@@ -218,40 +223,56 @@ var View = {
 
   drawBubble: function (x, y, msg) {
     //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
-    text = msg.content;
-    username = msg.username;
-    this.ctx.font = "8px Helvetica";
-    this.ctx.fillStyle = "white";
-    this.ctx.strokeStyle = "black";
-    this.ctx.lineWidth = "1";
-    w = this.ctx.measureText(text).width + 20;
-    h = 15;
-    radius = 5;
 
-    //set bubble animation
-    // var bubble_anim = makeArr(0, this.canvas.height + h, 60);
-    // var time = performance.now() * 0.001;
-    // y += -bubble_anim[Math.floor(time)*10];
+    for (let i=0; i<=100; i++)
+    {
+      that = this;
+      animateBubble(i, that)
+    }
+    
+    function animateBubble (i, that) {
+        setTimeout(function(){  
+        text = msg.content;
+        username = msg.username;
+        console.log("msg received for render: " + text + username);
+        w = that.ctx.measureText(text).width + 20;
+        h = 15;
+        radius = 5;
+        console.log("begin y at " + y + "x at " + x);
+        var r = x + w;
+        var b = y + h;
+        y = -50-i;
 
-    var r = x + w;
-    var b = y + h;
+        //draw bubble
+        that.ctx.beginPath();
+        console.log("begin bubble drawing");
+        that.ctx.font = "7px Helvetica";
+        that.ctx.strokeStyle = "black";
+        that.ctx.lineWidth = "1";
+        that.ctx.moveTo(x + radius, y);
+        that.ctx.lineTo(r - radius, y);
+        that.ctx.quadraticCurveTo(r, y, r, y + radius);
+        that.ctx.lineTo(r, y + h - radius);
+        that.ctx.quadraticCurveTo(r, b, r - radius, b);
+        that.ctx.lineTo(x + radius, b);
+        that.ctx.quadraticCurveTo(x, b, x, b - radius);
+        that.ctx.lineTo(x, y + radius);
+        that.ctx.quadraticCurveTo(x, y, x + radius, y);
+        //that.ctx.closePath();
+        that.ctx.fill();
+        that.ctx.stroke();
+        that.ctx.fillStyle = "#000";
+        that.ctx.fillText(username + text, x + 10, y + 10);
+        console.log("end bubble drawing");
+        console.log(i);
+      }, i*2000);
+      }
+  
+    return;
 
-    //draw bubble
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + radius, y);
-    this.ctx.lineTo(r - radius, y);
-    this.ctx.quadraticCurveTo(r, y, r, y + radius);
-    this.ctx.lineTo(r, y + h - radius);
-    this.ctx.quadraticCurveTo(r, b, r - radius, b);
-    this.ctx.lineTo(x + radius, b);
-    this.ctx.quadraticCurveTo(x, b, x, b - radius);
-    this.ctx.lineTo(x, y + radius);
-    this.ctx.quadraticCurveTo(x, y, x + radius, y);
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.stroke();
-    this.ctx.fillStyle = "#000";
-    this.ctx.fillText(username + text, x + 10, y + 10);
+    //update counter
+    // if (COUNTER == 60)
+    // BUBBLELOOPS += 1;
   
 },
 
@@ -274,26 +295,53 @@ var View = {
     var action_frame = action_anim[Math.floor(time * 10) % action_anim.length];
     var facing = user.facing;
 
-    if (user.action == "crouchdown" || user.action == "crouchup")
+    if (user.action == "talking" && user.gait == "idle") 
+      { 
+        this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
+      } 
+
+    else if (user.action == "crouchdown" || user.action == "sit")
       {
         this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
+        if (user.gait == "walking")
+        user.action = "none";
+        INTERACTION = false;
       }
-    //must fix this to limit frames to 2
-    else if (user.action == "talking" && user.gait == "idle") 
+    
+    //implementing jumping as 2 loops
+    else if (user.gait == "jumping") 
       { 
-        this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
+
+            this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 ); 
+            console.log ("drawing frame "+ gait_frame)
+
+            if ((Math.floor(time * 10) % gait_anim.length) == 4)
+            LOOPS += 1;
+            
+            if (LOOPS > 40)
+            {
+              user.gait = "idle";
+              console.log("view just flipped gait to " + user.gait)
+              if (INTERACTION == true)
+              INTERACTION = false;
+              LOOPS = 0;
+            }
+
         //this.drawBubble(user.position, -50, msg);
-      } 
-    else if (user.gait) 
-      { 
-        this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
-        this.drawBubble(user.position, -50, msg);
-        //this.ctx.font = "6px Helvetica";
-        //this.ctx.fillText(user.name, user.position - 10, 50);
+
       } 
     else if (user.action == "talking" && user.gait == "walking")
       this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
     // remove talking and return talking onUserArrive
+
+    else if (user.gait) 
+      { 
+        this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
+        //this.drawBubble(user.position, -50, msg);
+        //this.ctx.font = "6px Helvetica";
+        //this.ctx.fillText(user.name, user.position - 10, 50);
+      } 
+
   },
 
   getImage: function (url) {

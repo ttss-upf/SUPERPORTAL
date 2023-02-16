@@ -164,12 +164,12 @@ var View = {
       this.drawUsername(user);
       //draw speech bubbles
 
-      for (i = 0; i < this.message_bubble.length; i++) {
+      for (ind = 0; ind < this.message_bubble.length; ind++) {
         if (
-          this.message_bubble[i].dur != 0 &&
-          user.username == this.message_bubble[i].username
+          this.message_bubble[ind].dur != 0 &&
+          user.username == this.message_bubble[ind].username
         ) {
-          this.drawBubble(this.message_bubble[i], user.position);
+          this.drawBubble(this.message_bubble[ind], user.position);
         }
       }
     }

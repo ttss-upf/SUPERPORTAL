@@ -137,8 +137,9 @@ var MYAPP = {
                 this.my_user.target = [];
                 this.my_user.gait = val.reactionGait;
                 this.my_user.facing = val.reactionFacing; 
-                this.my_user.action = val.reactionAction;
+                this.my_user.action = val.reactionAction;            
                 INTERACTION = true;
+                //RENDERMSG = {content: "ineraction successful!"};
                 break;          
             }
             else

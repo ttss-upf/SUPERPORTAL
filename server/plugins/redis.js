@@ -4,8 +4,8 @@ const client = redis.createClient();
 client.on("error", function (error) {
   console.error(chalk.red(error));
 });
+client.connect();
 async function set(key, value, concat = false) {
-  await client.connect();
   if (typeof value === "object" && !concat) {
     value = JSON.stringify(value);
   } else if (value === undefined) {
@@ -13,26 +13,39 @@ async function set(key, value, concat = false) {
     return;
   }
   if (concat) {
-    let list = (JSON.parse(await client.get(key))) || [];
+    let list = JSON.parse(await client.get(key)) || [];
     list.push(value);
     await client.set(key, JSON.stringify(list));
   } else {
     await client.set(key, value);
   }
-  await client.disconnect();
 }
 
 async function get(key) {
-  await client.connect();
   let value = await client.get(key);
   if (typeof value === "string") {
     value = JSON.parse(value);
   }
-  await client.disconnect();
   return value;
+}
+
+async function update_user(name, value){
+  // update the user when log out
+  let list = await get("user_list");
+  if(list.length != undefined)
+  for(i = 0; i < list.length; i++){
+    if(list[i].username == name){
+      list[i].position = value.position;
+      list[i].room = value.room;
+      list[i].target = [value.position, 0]
+      break;
+    }
+  }
+  await set("user_list", list)
 }
 
 module.exports = {
   get,
   set,
+  update_user
 };

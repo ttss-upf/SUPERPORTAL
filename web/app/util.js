@@ -1,11 +1,3 @@
-function clamp(v, min, max) {
-  return v < min ? min : v > max ? max : v;
-}
-
-function lerp(a, b, f) {
-  return a * (1 - f) + b * f;
-}
-
 function euclDist (x, y, a, b) {
   return Math.sqrt((x-a)**2+(y-b)**2);
 }
@@ -17,23 +9,6 @@ function makeArr(startValue, stopValue, cardinality) {
     arr.push(startValue + step * i);
   }
   return arr;
-}
-
-function isIntersect(click, exit) {
-    //console.log(click,exit);
-  if (
-    Math.abs(click[0] - exit[0]) <= 10 &&
-    Math.abs(click[1] - exit[1]) <= 10
-  )
-    return true;
-}
-
-function isClose(pos, target) {
-  //console.log(pos,target);
-if (
-  Math.abs(pos - target) <= 15
-)
-  return true;
 }
 
 function isInteract(click, obj) {
@@ -49,3 +24,4 @@ function isInteract(click, obj) {
   )
     return true;
 }
+

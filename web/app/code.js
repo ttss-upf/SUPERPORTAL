@@ -1,40 +1,3 @@
-var room_list = {
-  Pirate: {
-    name: "Pirate",
-    url: "./images/pirate_island.png",
-    id: 0,
-    online_num: 0,
-    weather: "snow",
-    default: true,
-    people: [
-      // {
-      //   position: 79.69921875,
-      //   avatar: "./images/character1.png",
-      //   name: "username",
-      //   facing: 0,
-      //   gait: "idle",
-      //   action: "none",
-      //   target: [79.69921875, 70.1015625],
-      //   room: "Pirate",
-      // },
-    ],
-    range: [-300, 300],
-    exits: [-30, -60],
-    leadsTo: "Beach",
-  },
-  Beach: {
-    name: "Beach",
-    url: "./images/beach_night.png",
-    id: 1,
-    default: false,
-    online_num: 0,
-    weather: "rain",
-    people: [],
-    range: [-300, 300],
-    exits: [-285, 80],
-    leadsTo: "Pirate",
-  },
-};
 var mychat = {
   url: "http://localhost:9022/",
   window: null,
@@ -71,22 +34,27 @@ var mychat = {
 
     this.LoginButton.addEventListener("click", this.onLoginClick.bind(this));
     this.LogoutButton.addEventListener("click", this.onLogoutClick.bind(this));
-    this.WeatherButton.addEventListener("click", this.onWeatherClick.bind(this));
-    this.textarea.addEventListener( "keydown", this.onKeyPressed.bind(this, "3") ); // send message on Enter
+    this.WeatherButton.addEventListener(
+      "click",
+      this.onWeatherClick.bind(this)
+    );
+    this.textarea.addEventListener(
+      "keydown",
+      this.onKeyPressed.bind(this, "3")
+    ); // send message on Enter
     this.sendbutton.onclick = this.onKeyPressed.bind(this, "1"); // send message on "send" button click
   },
 
-  onLoginClick: function (event) {
-    let username = this.input_username.value;
-    let password = this.input_password.value;
-    if (username == "" || password == "") {
+  onLoginClick: async function (event) {
+    if (this.input_username.value == "" || this.input_password.value == "") {
       alert("please input all the information");
       return;
     }
-    let user = {};
+    let user = WORLD.createUser({
+      username: this.input_username.value,
+    });
     //user.avatar = "url"
-    user.username = username;
-    user.password = password;
+    user.password = this.input_password.value;
     const options = {
       method: "POST",
       headers: {
@@ -94,23 +62,25 @@ var mychat = {
       },
       body: JSON.stringify(user),
     };
-    fetch(this.url + "login", options)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status == 200) {
-          // alert(data.content);
-          this.myspace.my_username = username;
-          this.myspace.my_userid = data.content;
-          delete user.password;
-          this.myspace.my_user = WORLD.createUser(user);
-          let app = document.querySelector("#EnterApp");
-          app.style.display = "none";
-          mychat.Connect();
-          MYAPP.init();
-        } else {
-          alert(data.msg);
-        }
-      });
+    let res = await fetch(this.url + "login", options);
+    let data = await res.json();
+    if (data.status == 200) {
+      this.myspace.my_username = this.input_username.value;
+      this.myspace.my_userid = data.content.id;
+      delete data.content.password;
+      let res = await fetch(this.url + "load/room_list");
+      res = await res.json();
+      WORLD.rooms_by_id = res;
+      console.log("user", data.content);
+      this.myspace.my_user = WORLD.createUser(data.content);
+      MYAPP.current_room = WORLD.rooms_by_id[this.myspace.my_user.room];
+      let app = document.querySelector("#EnterApp");
+      app.style.display = "none";
+      await mychat.Connect(this.myspace.my_username);
+      
+    } else {
+      alert(data.msg);
+    }
   },
 
   onLogoutClick: function () {
@@ -118,30 +88,35 @@ var mychat = {
     this.ConnectionKilled();
   },
 
-  onWeatherClick: function ()
-  {
+  onWeatherClick: function () {
     button = this.WeatherButton;
-    if (button.innerHTML == "weather toggle")
+    if (button.innerHTML == "weather toggle") {
+      View.weather = "snow";
       button.innerHTML = "snow";
-    else if (button.innerHTML == "snow")
+    } else if (button.innerHTML == "snow") {
       button.innerHTML = "rain";
-    else if (button.innerHTML == "rain")
+      View.weather = "rain"
+    } else if (button.innerHTML == "rain") {
       button.innerHTML = "sunny";
-    else if (button.innerHTML == "sunny")
+      View.weather = "sunny"
+    } else if (button.innerHTML == "sunny") {
       button.innerHTML = "snow";
+      View.weather = "snow"
+    }
+    View.drawWeather();
   },
 
-  Connect: function () {
-    // our server
-    this.server = new WebSocket("ws://localhost:9022/" + this.myspace.my_room);
-    //this.server.onopen = this.ShareID.bind(this);
+  Connect: async function (username) {
+    console.log("connecting");
+    this.server = new WebSocket(
+      "ws://localhost:9022/" + "Beach" + "?username=" + username
+    );
     this.server.onopen = this.ReceiveText.bind(this);
     this.server.onmessage = this.ReceiveText.bind(this);
+    await MYAPP.init();
   },
 
   ShareID: function (user_id) {
-    //if (this.server.loadData)
-    //    { this.server.loadData(this.myspace.my_room, this.loadHistory.bind(this)); }
     msg = {
       content: "Welcome to Super Portal, " + this.myspace.my_username,
       username: "system message",
@@ -149,34 +124,11 @@ var mychat = {
       timestamp: new Date().toTimeString().slice(0, 5),
     };
     this.showText(msg, "joinleft");
-    // msg = {
-    //   content:
-    //     "To send a private message to users, start with '@user_ID', eg.: '@1405 @6203 Hello'",
-    //   username: "system message",
-    //   type: "sysmsg",
-    //   timestamp: new Date().toTimeString().slice(0, 5),
-    // };
-    // this.showText(msg, "joinleft");
-    this.myspace.my_userid = user_id;
-
-    // button = document.querySelector(".connectButton");
-    // button.innerHTML = "reset";
   },
 
-  RoomEnter: function (user_id) {
+  notify: function (data, type) {
     msg = {
-      content: "User " + user_id + " has joined the room.",
-      username: "system message",
-      type: "sysmsg",
-      timestamp: new Date().toTimeString().slice(0, 5),
-    };
-    this.showText(msg, "joinleft");
-    //this.server.getReport(this.LobbyData.bind(this));
-  },
-
-  RoomLeave: function (user_id) {
-    msg = {
-      content: "User " + user_id + " has left the room.",
+      content: "User " + data + " has " + type + " the room.",
       username: "system message",
       type: "sysmsg",
       timestamp: new Date().toTimeString().slice(0, 5),
@@ -195,30 +147,39 @@ var mychat = {
     this.showText(msg, "joinleft");
   },
 
-  //ReceiveText: function ( user_id, msg)
   ReceiveText: function (data) {
     if (data.data) {
-      msg = data.data;
-      var obj = JSON.parse(msg);
-      console.log(obj);
-      //if (obj.user_id)
-      //    { obj.user_id = user_id; }
-      //obj.userid = user_id;
+      var obj = JSON.parse(data.data);
       if (obj.type == "login") this.ShareID(obj.user_id);
-      //else if (obj.type == "leftroom" && obj.user_id == this.myspace.my_userid) this.ConnectionKilled();
-      else if (obj.type == "leftroom") this.RoomLeave(obj.user_id);
-      else if (obj.type == "joinedroom") this.RoomEnter(obj.user_id);
-      else if (obj.type == "text") this.showText(obj, "received");
-      if (obj.type !== "private") {
-        this.mydatabase.content.push(obj);
+      else if (obj.type == "leftroom") {
+        this.notify(obj.username, "left");
+        for (i = 0; i < MYAPP.current_room.people.length; i++) {
+          if (MYAPP.current_room.people[i].username == obj.username)
+            MYAPP.current_room.people.splice(i, 1);
+        }
+      } else if (obj.type == "joinedroom") {
+        this.notify(obj.username, "joined");
+        console.log(obj);
+        WORLD.createUser(obj.content);
+      } else if (obj.type == "text") this.showText(obj, "received");
+      else if (obj.type == "state") {
+        // console.log("received data", obj.content);
+        WORLD.updateRoom(obj.content);
+        MYAPP.current_room = WORLD.getRoom(obj.content.name);
+        MYAPP.my_user = this.myspace.my_user;
+        // console.log(MYAPP.my_user.facing);
+        // console.log(MYAPP.my_user);
+        // this.ShareRoomWelcome(MYAPP.current_room);
       }
+      // if (obj.type !== "private") {
+      //   this.mydatabase.content.push(obj);
+      // }
     }
   },
 
   printInfo: function (data) {
     console.log(data);
   },
-
 
   showText: function (msg, style) {
     var elem = document.createElement("div");
@@ -252,8 +213,7 @@ var mychat = {
   onKeyPressed: function (cas, event) {
     if (event.key === "Enter" && event.shiftKey) {
       return;
-    } 
-    else if (event.key === "Enter" || cas == "1") {
+    } else if (event.key === "Enter" || cas == "1") {
       event.preventDefault();
       input = this.textarea.value;
       if (input.startsWith("@")) {
@@ -273,11 +233,10 @@ var mychat = {
         username: this.myspace.my_username,
         timestamp: new Date().toTimeString().slice(0, 5),
       };
-      state = {
-        type: "state",
-        content: room_list[this.textarea.value],
-      };
-      console.log(state);
+      // state = {
+      //   type: "state",
+      //   content: room_list[this.textarea.value],
+      // };
       //   if (msg.type === "private") {
       //     if (
       //       sendToUser.every((sendToUser) =>
@@ -312,30 +271,28 @@ var mychat = {
       //   } else {
       s_msg = JSON.stringify(msg);
       this.server.send(s_msg);
-      this.server.send(JSON.stringify(state));
+      // this.server.send(JSON.stringify(state));
       MYAPP.OnUserSpeak(msg);
       this.mydatabase.content.push(msg);
       this.showText(msg, "sent");
-
       //catching error
-      if (this.server.storeData) {
-        clientsArray = Object.keys(this.server.clients);
-        if (this.myspace.my_userid == Math.min(...clientsArray)) {
-          this.server.storeData(
-            this.myspace.my_room,
-            JSON.stringify(this.mydatabase.content),
-            this.printInfo.bind(this)
-          );
-        }
-      }
+      // if (this.server.storeData) {
+      //   clientsArray = Object.keys(this.server.clients);
+      //   if (this.myspace.my_userid == Math.min(...clientsArray)) {
+      //     this.server.storeData(
+      //       this.myspace.my_room,
+      //       JSON.stringify(this.mydatabase.content),
+      //       this.printInfo.bind(this)
+      //     );
+      //   }
+      // }
       //   }
 
       this.textarea.value = "";
     }
   },
 
-  ShareRoomWelcome: function (room)
-  {
+  ShareRoomWelcome: function (room) {
     msg = {
       content: "",
       username: "system message",
@@ -345,12 +302,13 @@ var mychat = {
 
     switch (room.name) {
       case "Beach":
-        msg.content = "You've made it to the Beach! If you're hungry, help yourself to an apple. Don't forget to sit back and stargaze!"
+        msg.content =
+          "You've made it to the Beach! If you're hungry, help yourself to an apple. Don't forget to sit back and stargaze!";
         break;
       case "Pirate":
-        msg.content = "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!"
+        msg.content =
+          "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!";
     }
     this.showText(msg, "joinleft");
   },
-
 };

@@ -40,7 +40,39 @@ div {
   height: 100%;
 }
 
-div#main {
+
+p {
+  margin:0;
+}
+
+h1 {
+  width: 100%;
+  cursor: pointer;
+  background-color: rgb(89, 89, 131);
+}
+
+h3 {
+  font-family: "silkscreenfonth3";
+  font-weight: 500;
+}
+
+img {
+  object-fit: cover;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  margin:0;
+  border:0;
+  padding-top:5px;
+  padding-bottom: 5px;
+  padding-right:10px;
+  padding-left:10px;
+}
+
+
+#main {
   display: flex;
   align-items: flex-start;
   height: 97%;
@@ -72,6 +104,16 @@ div#main {
   left: 0px;
   top: 0px;
   /* display: none; */
+}
+.btn {
+  border-radius: 4px;
+  height: 30px;
+}
+.btn:hover {
+
+  transition: all 0.2s;
+  background-color: rgba(118, 109, 217, 0.8);
+  color: white;
 }
 
 #Start {
@@ -208,9 +250,7 @@ button:focus {
   overflow: hidden;
 }
 
-p {
-  margin:0;
-}
+
 
 .contactname {
   padding:2%;
@@ -239,20 +279,6 @@ p {
   /*display: none;*/
 }
 
-h1 {
-  width: 100%;
-  cursor: pointer;
-  background-color: rgb(89, 89, 131);
-}
-
-h3 {
-  font-family: "silkscreenfonth3";
-  font-weight: 500;
-}
-
-img {
-  object-fit: cover;
-}
 
 .profilepic {
   vertical-align: middle;
@@ -388,17 +414,6 @@ img {
   overflow-wrap: break-word;
 }
 
-input {
-  width: 100%;
-  box-sizing: border-box;
-  margin:0;
-  border:0;
-  padding-top:5px;
-  padding-bottom: 5px;
-  padding-right:10px;
-  padding-left:10px;
-}
-
 #typesendmsg {
   display: flex;
   align-items: flex-start;
@@ -414,6 +429,10 @@ input {
   background-color: transparent;
   color:aliceblue;
   font-weight: 800;
+  line-height: 100%;
+  margin-top: 4px;
+  
+  font-family:"silkscreenfontchat";;
 }
 
 .currentmessage {
@@ -434,6 +453,12 @@ input {
 .currentmessage[contenteditable]:empty::before {
   content: "Type a message";
   color: gray;
+}
+
+.currentmessage::placeholder {
+  color: green;
+  font-family:"silkscreenfontchat";
+  font-weight: bold;
 }
 
 .joinleft {
@@ -489,5 +514,3 @@ input {
     opacity: 0;
   }
 }
-
-/*}*/

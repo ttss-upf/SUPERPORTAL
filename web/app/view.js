@@ -5,34 +5,22 @@ var View = {
   scale: 2,
   particles: [],
   angle: 0,
+  weather: "snow",
   init: function (canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
     if (this.canvas.getContext) {
       this.canvas_w = this.canvas.parentNode.getBoundingClientRect().width;
       this.canvas_h = this.canvas.parentNode.getBoundingClientRect().height;
-
-      // 產生雨滴
-      var maxParts = 50;
-      for (var a = 0; a < maxParts; a++) {
-        this.particles.push({
-          x: Math.random() * this.canvas_w,
-          y: Math.random() * this.canvas_h,
-          l: Math.random() * 1,
-          xs: -4 + Math.random() * 4 + 2,
-          ys: Math.random() * 10 + 10,
-          r: Math.random() * 4 + 1, //radius
-          d: Math.random() * maxParts, //density
-        });
-      }
     }
+    this.drawWeather();
   },
 
   draw: function (current_room) {
     var parent = this.canvas.parentNode;
     var rect = parent.getBoundingClientRect();
-    this.canvas.width = rect.width-400;
-    this.canvas.height = 0.97*rect.height;
+    this.canvas.width = rect.width - 400;
+    this.canvas.height = 0.97 * rect.height;
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();
@@ -46,50 +34,60 @@ var View = {
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(-1, -1, 2, 2);
     this.ctx.restore();
-    // 繪出maxParts個雨滴
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    // for (var c = 0; c < this.particles.length; c++) {
-    //   var p = this.particles[c];
-    //   this.ctx.beginPath();
+    if (this.weather == "rain") {
+      for (var c = 0; c < this.particles.length; c++) {
+        var p = this.particles[c];
+        this.ctx.beginPath();
 
-    //   // 初始位置
-    //   this.ctx.moveTo(p.x, p.y);
-
-    //   // 畫線
-    //   this.ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
-    //   this.ctx.stroke();
-    // }
-
-    // // 移動線(雨滴)func
-    // this.move();
-    this.ctx.beginPath();
-		for(var i = 0; i < this.particles.length; i++)
-		{
-			var p = this.particles[i];
-			this.ctx.moveTo(p.x, p.y);
-			this.ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
-		}
-		this.ctx.fill();
-		this.update();
+        this.ctx.moveTo(p.x, p.y);
+        this.ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
+        this.ctx.stroke();
+      }
+      this.rain();
+    } else if (this.weather == "snow") {
+      this.ctx.beginPath();
+      for (var i = 0; i < this.particles.length; i++) {
+        var p = this.particles[i];
+        this.ctx.moveTo(p.x, p.y);
+        this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+      }
+      this.ctx.fill();
+      this.snow();
+    }
   },
-
-  move: function () {
+  drawWeather: function () {
+    if (this.weather == "snow") var maxParts = 50;
+    else if (this.weather == "rain") {
+      var maxParts = 100;
+    }
+    if (this.weather != "sunny")
+      for (var a = 0; a < maxParts; a++) {
+        this.particles.push({
+          x: Math.random() * this.canvas_w,
+          y: Math.random() * this.canvas_h,
+          l: Math.random() * 1,
+          xs: -4 + Math.random() * 4 + 2,
+          ys: Math.random() * 10 + 10,
+          r: Math.random() * 4 + 1, //radius
+          d: Math.random() * maxParts, //density
+        });
+      }
+  },
+  rain: function () {
     for (var b = 0; b < this.particles.length; b++) {
       var p = this.particles[b];
       p.x += p.xs;
       p.y += p.ys;
 
-      // if 雨滴超出螢幕
       if (p.x > this.canvas_w || p.y > this.canvas_h) {
-        // 重新設定x位置
         p.x = Math.random() * this.canvas_w;
-        // 移到螢幕之上
         p.y = -20;
       }
     }
   },
 
-  update: function () {
+  snow: function () {
     this.angle += 0.01;
     for (var i = 0; i < this.particles.length; i++) {
       var p = this.particles[i];
@@ -175,8 +173,8 @@ var View = {
     this.ctx.fillRect(current_room.exits[0], current_room.exits[1], 5, 5);
 
     //draw interactive objects
-    if (current_room.objects){
-      Object.values(current_room.objects).forEach(val => {
+    if (current_room.objects) {
+      Object.values(current_room.objects).forEach((val) => {
         centroid = val.centroid;
         size = val.size;
         switch (size) {
@@ -193,7 +191,7 @@ var View = {
         this.ctx.beginPath();
         this.ctx.arc(centroid[0], centroid[1], size, 0, 2 * Math.PI);
         this.ctx.lineWidth = 2;
-        this.ctx.strokeStyle = 'pink';
+        this.ctx.strokeStyle = "pink";
         this.ctx.stroke();
         this.ctx.closePath();
       });
@@ -252,15 +250,13 @@ var View = {
     this.ctx.stroke();
     this.ctx.fillStyle = "#000";
     this.ctx.fillText(username + text, x + 10, y + 10);
-  
-},
-
+  },
 
   drawUser: function (user) {
     var msg = {
       content: "hello test testtest test test test test test",
       username: user.name,
-    }
+    };
     if (!user.avatar) return;
 
     var gait_anim = this.gait_animations[user.gait];
@@ -274,34 +270,68 @@ var View = {
     var action_frame = action_anim[Math.floor(time * 10) % action_anim.length];
     var facing = user.facing;
 
-    if (user.action == "crouchdown" || user.action == "crouchup")
-      {
-        this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
-      }
+    if (user.action == "crouchdown" || user.action == "crouchup") {
+      this.ctx.drawImage(
+        img,
+        action_frame * 32,
+        facing * 64,
+        32,
+        64,
+        user.position - 16,
+        -28,
+        32,
+        64
+      );
+    }
     //must fix this to limit frames to 2
-    else if (user.action == "talking" && user.gait == "idle") 
-      { 
-        this.ctx.drawImage( img, action_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
-        //this.drawBubble(user.position, -50, msg);
-      } 
-    else if (user.gait) 
-      { 
-        this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
-        this.drawBubble(user.position, -50, msg);
-        //this.ctx.font = "6px Helvetica";
-        //this.ctx.fillText(user.name, user.position - 10, 50);
-      } 
-    else if (user.action == "talking" && user.gait == "walking")
-      this.ctx.drawImage( img, gait_frame * 32, facing * 64, 32, 64, user.position - 16, -28, 32, 64 );
+    else if (user.action == "talking" && user.gait == "idle") {
+      this.ctx.drawImage(
+        img,
+        action_frame * 32,
+        facing * 64,
+        32,
+        64,
+        user.position - 16,
+        -28,
+        32,
+        64
+      );
+      //this.drawBubble(user.position, -50, msg);
+    } else if (user.gait) {
+      this.ctx.drawImage(
+        img,
+        gait_frame * 32,
+        facing * 64,
+        32,
+        64,
+        user.position - 16,
+        -28,
+        32,
+        64
+      );
+      this.drawBubble(user.position, -50, msg);
+      //this.ctx.font = "6px Helvetica";
+      //this.ctx.fillText(user.name, user.position - 10, 50);
+    } else if (user.action == "talking" && user.gait == "walking")
+      this.ctx.drawImage(
+        img,
+        gait_frame * 32,
+        facing * 64,
+        32,
+        64,
+        user.position - 16,
+        -28,
+        32,
+        64
+      );
     // remove talking and return talking onUserArrive
   },
 
   getImage: function (url) {
     if (imgs[url]) return imgs[url];
-  
+
     var img = (imgs[url] = new Image());
     img.src = url;
     return img;
-  }
+  },
 };
-

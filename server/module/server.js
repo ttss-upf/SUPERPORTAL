@@ -2,6 +2,7 @@ module.exports = () => {
   var user_id = 0;
   const interval = 0.03;
   const redis = require("../plugins/redis");
+  var cam_offset = 0;
   const {
     WORLD,
     User,
@@ -11,7 +12,7 @@ module.exports = () => {
     FACING_LEFT,
     FACING_RIGHT,
   } = require("../../web/app/model");
-  const { lerp, clamp, isIntersect, isClose } = require("../plugins/util");
+  const { lerp, clamp, isIntersect, isClose, isInteract } = require("../plugins/util");
 
   const Server = {
     // contains all the connection {"username": {"connection": connection, "user": user}}
@@ -196,14 +197,15 @@ module.exports = () => {
       for (var i in WORLD.rooms_by_id) {
         var room = WORLD.rooms_by_id[i];
         //update state if iteracting with envronment objects
-        // var interaction = this.onUserInteract();
-
+        
         //updating user position according to target
+
         let receiver_list = [];
         for (let i = 0; i < room.people.length; i++) {
           let user = room.people[i];
           receiver_list.push(user.username);
-
+          Server.on_userinteract(room, user);
+          
           user.target[0] = clamp(user.target[0], room.range[0], room.range[1]);
           var diff = user.target[0] - user.position;
           var delta = diff;
@@ -229,8 +231,7 @@ module.exports = () => {
           //update current_room when leaving
           Server.on_left_room(user, room);
 
-          //this.cam_offset = -user.position;
-          this.cam_offset = lerp(this.cam_offset, -user.position, 0.025);
+          cam_offset = lerp(cam_offset, -user.position, 0.025);
         }
         let data = {
           content: room,
@@ -241,12 +242,51 @@ module.exports = () => {
         }
       }
     },
+    on_userinteract: function (room, user) {
+      if (room.objects) {
+        Object.values(room.objects).forEach((val) => {
+          while (isInteract(user.target, val)) {
+            if (user.position == user.target[0]) {
+              console.log("you just interacted!");
+              user.target = [];
+              user.gait = val.reactionGait;
+              user.facing = val.reactionFacing;
+              user.action = val.reactionAction;
+              // INTERACTION = true;
+              //RENDERMSG = {content: "ineraction successful!"};
+              break;
+            } else break;
+          }
+        });
+      }
+    },
+    // on_userinteract: function (room, user) {
+    //   if (room.objects) {
+    //     Object.values(room.objects).forEach((val) => {
+    //       if(isInteract(user.target, val) && user.gait == "idle" && isInteract([user.position, 15], val)){
+    //         console.log("you just interacted!");
 
+
+    //       }
+    //       // while (isInteract(user.target, val)) {
+    //       //   if (user.position == user.target[0]) {
+    //       //     user.target = [];
+    //       //     user.gait = val.reactionGait;
+    //       //     user.facing = val.reactionFacing;
+    //       //     user.action = val.reactionAction;
+    //       //     INTERACTION = true;
+    //       //     //RENDERMSG = {content: "ineraction successful!"};
+    //       //     break;
+    //       //   } else break;
+    //       // }
+    //     });
+    //   }
+    // },
     start: async function () {
       let data = await Server.on_load("room_list");
-      data.forEach(ele => {
+      data.forEach((ele) => {
         WORLD.rooms_by_id[ele.name] = ele;
-      })
+      });
       // WORLD.rooms_by_id = data;
       setInterval(Server.on_update, interval * 1000);
     },

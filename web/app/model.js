@@ -28,8 +28,9 @@ User.prototype.toJson = function (obj) {
   return data;
 };
 function Room(obj) {
-  this.name = obj.name || "default room name";
-  this.url = obj.url || "";
+  this.name = obj.name || 'default room name';
+  this.url = obj.url || '';
+  this.welcome_msg = obj.welcome_msg || "";
   this.id = -1;
   this.people = obj.people || [];
   this.range = obj.range || [-300, 300];

@@ -1,8 +1,6 @@
-var last = performance.now();
-var keys = {};
+var INTERACTION = false;
+
 var mouse_pos = [0, 0];
-var mouse_buttons = 0;
-var imgs = {};
 
 var MYAPP = {
   current_room: null,
@@ -27,86 +25,28 @@ var MYAPP = {
     if (this.current_room) View.draw(this.current_room);
   },
 
-  //function that should be used to modify the state of my application
-  // update: function (user,dt) {
-  //   if (this.my_user) {
-  //     var room = this.current_room;
-  //     //update state if interacting with environment objects
-  //     if (this.current_room) {
-  //       var interaction = this.onUserInteract();
-  //       //updating user position according to target
-  //       this.my_user.target[0] = clamp(
-  //         this.my_user.target[0],
-  //         room.range[0],
-  //         room.range[1]
-  //       );
-  //       var diff = this.my_user.target[0] - this.my_user.position;
-  //       var delta = diff;
-  //       if (delta > 0) delta = 30;
-  //       else if (delta < 0) delta = -30;
-  //       else delta = 0;
-  //       if (Math.abs(diff) < 1) {
-  //         delta = 0;
-  //         this.my_user.position = this.my_user.target[0];
-  //       } else this.my_user.position += delta * dt;
 
-  //       //updating gait and action
-  //       if (delta == 0) {
-  //         if (!interaction) this.my_user.gait = "idle";
-  //       } else {
-  //         if (delta > 0) this.my_user.facing = FACING_RIGHT;
-  //         else this.my_user.facing = FACING_LEFT;
-  //         this.my_user.gait = "walking";
+  // onUserInteract: function () {
+  //   if (this.current_room.objects) {
+  //     Object.values(this.current_room.objects).forEach((val) => {
+  //       while (isInteract(this.my_user.target, val)) {
+  //         if (this.my_user.position == this.my_user.target[0]) {
+  //           console.log("you just interacted!");
+  //           this.my_user.target = [];
+  //           this.my_user.gait = val.reactionGait;
+  //           this.my_user.facing = val.reactionFacing;
+  //           this.my_user.action = val.reactionAction;
+  //           return this.my_user.gait;
+  //           break;
+  //         } else break;
   //       }
-
-  //       //update current_room when leaving
-  //       this.onUserLeave();
-
-  //       //this.cam_offset = -this.my_user.position;
-  //       this.cam_offset = lerp(this.cam_offset, -this.my_user.position, 0.025);
-  //     }
-  //   }
-
-  //   // if (keys["ArrowLeft"]) this.cam_offset += dt * 50;
-  //   // if (keys["ArrowRight"]) this.cam_offset -= dt * 50;
-  // },
-
-  // onUserLeave: function () {
-  //   while (isIntersect(this.my_user.target, this.current_room.exits)) {
-  //     if (isClose(this.my_user.position, this.current_room.exits[0])) {
-  //       this.current_room.removeUser(this.my_user);
-  //       // index = WORLD.rooms.findIndex(
-  //       //   (x) => x.name === this.current_room.leadsTo
-  //       // );
-  //       this.current_room = WORLD.rooms_by_id[this.current_room.leadsTo];
-  //       this.my_user.room = this.current_room.name;
-  //       this.current_room.addUser(this.my_user);
-  //       mychat.ShareRoomWelcome(this.current_room);
-  //     } else break;
+  //     });
   //   }
   // },
-
-  onUserInteract: function () {
-    if (this.current_room.objects) {
-      Object.values(this.current_room.objects).forEach((val) => {
-        while (isInteract(this.my_user.target, val)) {
-          if (this.my_user.position == this.my_user.target[0]) {
-            console.log("you just interacted!");
-            this.my_user.target = [];
-            this.my_user.gait = val.reactionGait;
-            this.my_user.facing = val.reactionFacing;
-            this.my_user.action = val.reactionAction;
-            return this.my_user.gait;
-            break;
-          } else break;
-        }
-      });
-    }
-  },
 
   OnUserSpeak: function (msg) {
     this.my_user.action = "talking";
-    //View.drawBubble(this.my_user.position, -50, msg);
+    //return msg; // we just testing, but we should receive msgs differently.
   },
 
   onMouse: function (e) {
@@ -142,13 +82,8 @@ var MYAPP = {
   },
 };
 
-//MYAPP.init();
-
 function loop() {
-  // var now = performance.now();
-  // var elapsed_time = (now - last) / 1000;
-  // last = now;
-  // MYAPP.update(elapsed_time);
+
   MYAPP.draw();
   requestAnimationFrame(loop);
 }

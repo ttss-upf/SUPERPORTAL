@@ -1,3 +1,5 @@
+var RENDERMYMSG = null; // bad, just testing something
+var RENDERMSG = null;
 var mychat = {
   url: "http://localhost:9022/",
   window: null,
@@ -77,7 +79,6 @@ var mychat = {
       let app = document.querySelector("#EnterApp");
       app.style.display = "none";
       await mychat.Connect(this.myspace.my_username);
-      
     } else {
       alert(data.msg);
     }
@@ -95,13 +96,13 @@ var mychat = {
       button.innerHTML = "snow";
     } else if (button.innerHTML == "snow") {
       button.innerHTML = "rain";
-      View.weather = "rain"
+      View.weather = "rain";
     } else if (button.innerHTML == "rain") {
       button.innerHTML = "sunny";
-      View.weather = "sunny"
+      View.weather = "sunny";
     } else if (button.innerHTML == "sunny") {
       button.innerHTML = "snow";
-      View.weather = "snow"
+      View.weather = "snow";
     }
     View.drawWeather();
   },
@@ -134,7 +135,6 @@ var mychat = {
       timestamp: new Date().toTimeString().slice(0, 5),
     };
     this.showText(msg, "joinleft");
-    //this.server.getReport(this.LobbyData.bind(this));
   },
 
   ConnectionKilled: function () {
@@ -161,19 +161,18 @@ var mychat = {
         this.notify(obj.username, "joined");
         console.log(obj);
         WORLD.createUser(obj.content);
-      } else if (obj.type == "text") this.showText(obj, "received");
-      else if (obj.type == "state") {
-        // console.log("received data", obj.content);
+      } else if (obj.type == "text") {
+        this.showText(obj, "received");
+        View.message_bubble.push({
+          content: obj.content,
+          username: obj.username,
+          dur: 500
+        })
+      } else if (obj.type == "state") {
         WORLD.updateRoom(obj.content);
         MYAPP.current_room = WORLD.getRoom(obj.content.name);
         MYAPP.my_user = this.myspace.my_user;
-        // console.log(MYAPP.my_user.facing);
-        // console.log(MYAPP.my_user);
-        // this.ShareRoomWelcome(MYAPP.current_room);
       }
-      // if (obj.type !== "private") {
-      //   this.mydatabase.content.push(obj);
-      // }
     }
   },
 
@@ -194,7 +193,7 @@ var mychat = {
     elem.appendChild(div);
     let div2 = document.createElement("div");
     div2.className = "publishedmsg";
-    div2.classList.add(msg.type); // will use type for now to assess the second class (if available) of the div
+    div2.classList.add(msg.type);
     div2.innerHTML = msg.content;
     elem.appendChild(div2);
     if (div2.innerHTML.trim() == "") {
@@ -206,7 +205,6 @@ var mychat = {
         "#conversation > div:last-of-type"
       );
       lastdiv.scrollIntoView();
-      //conversation.scrollTop = 10000;
     }
   },
 
@@ -233,60 +231,40 @@ var mychat = {
         username: this.myspace.my_username,
         timestamp: new Date().toTimeString().slice(0, 5),
       };
-      // state = {
-      //   type: "state",
-      //   content: room_list[this.textarea.value],
-      // };
-      //   if (msg.type === "private") {
-      //     if (
-      //       sendToUser.every((sendToUser) =>
-      //         clients_info.hasOwnProperty(sendToUser)
-      //       )
-      //     ) {
-      //       s_msg = JSON.stringify(msg);
-      //       this.server.send(s_msg, sendToUser);
-      //       //this.mydatabase.content.push(msg);
-      //       this.showText(msg, "sent");
-
-      //       clientsArray = Object.keys(this.server.clients);
-      //       if (this.myspace.my_userid == Math.min(...clientsArray)) {
-      //         this.server.storeData(
-      //           this.myspace.my_room,
-      //           JSON.stringify(this.mydatabase.content),
-      //           this.printInfo.bind(this)
-      //         );
-      //       }
-      //     } else {
-      //       errorNoUsermsg = {
-      //         content:
-      //           "Message was not sent because user(s) " +
-      //           sendToUser +
-      //           " is/are not in the room.",
-      //         username: "system message",
-      //         type: "sysmsg",
-      //       };
-      //       this.showText(errorNoUsermsg, "joinleft");
-      //       this.server.feedback = false;
-      //     }
-      //   } else {
-      s_msg = JSON.stringify(msg);
-      this.server.send(s_msg);
-      // this.server.send(JSON.stringify(state));
-      MYAPP.OnUserSpeak(msg);
-      this.mydatabase.content.push(msg);
-      this.showText(msg, "sent");
-      //catching error
-      // if (this.server.storeData) {
-      //   clientsArray = Object.keys(this.server.clients);
-      //   if (this.myspace.my_userid == Math.min(...clientsArray)) {
-      //     this.server.storeData(
-      //       this.myspace.my_room,
-      //       JSON.stringify(this.mydatabase.content),
-      //       this.printInfo.bind(this)
-      //     );
-      //   }
-      // }
-      //   }
+      if (msg.type === "private") {
+        if (
+          sendToUser.every((sendToUser) => {
+            for (i in MYAPP.current_room.people) {
+              sendToUser == MYAPP.current_room.people[i].name;
+            }
+          })
+        ) {
+          s_msg = JSON.stringify(msg);
+          this.server.send(s_msg, sendToUser);
+          this.showText(msg, "sent");
+        } else {
+          errorNoUsermsg = {
+            content:
+              "Message was not sent because user(s) " +
+              sendToUser +
+              " is/are not in the room.",
+            username: "system message",
+            type: "sysmsg",
+          };
+          this.showText(errorNoUsermsg, "joinleft");
+          this.server.feedback = false;
+        }
+      } else {
+        s_msg = JSON.stringify(msg);
+        this.server.send(s_msg);
+        MYAPP.OnUserSpeak(msg);
+        View.message_bubble.push({
+          content: msg.content,
+          username: msg.username,
+          dur: 500
+        })
+        this.showText(msg, "sent");
+      }
 
       this.textarea.value = "";
     }
@@ -294,21 +272,12 @@ var mychat = {
 
   ShareRoomWelcome: function (room) {
     msg = {
-      content: "",
+      content: room.welcome_msg,
       username: "system message",
       type: "sysmsg",
       timestamp: new Date().toTimeString().slice(0, 5),
     };
 
-    switch (room.name) {
-      case "Beach":
-        msg.content =
-          "You've made it to the Beach! If you're hungry, help yourself to an apple. Don't forget to sit back and stargaze!";
-        break;
-      case "Pirate":
-        msg.content =
-          "This is Pirates' Island. They say curiosity killed the cat. Don't get too wise, you might not get away with it!";
-    }
     this.showText(msg, "joinleft");
   },
 };

@@ -3,16 +3,14 @@ module.exports = () => {
   const interval = 0.03;
   const redis = require("../plugins/redis");
   var cam_offset = 0;
+  const { Model, World, User, Room } = require("../../web/app/model");
   const {
-    WORLD,
-    User,
-    Room,
-    FACING_BACK,
-    FACING_FRONT,
-    FACING_LEFT,
-    FACING_RIGHT,
-  } = require("../../web/app/model");
-  const { lerp, clamp, isIntersect, isClose, isInteract } = require("../plugins/util");
+    lerp,
+    clamp,
+    isIntersect,
+    isClose,
+    isInteract,
+  } = require("../plugins/util");
 
   const Server = {
     // contains all the connection {"username": {"connection": connection, "user": user}}
@@ -23,7 +21,7 @@ module.exports = () => {
       if (!username || typeof username == "undefined") return;
 
       this.connection_dict[username].connection = connection;
-      WORLD.users[username] = this.connection_dict[username].user.room;
+      World.users[username] = this.connection_dict[username].user.room;
       let data = {
         type: "login",
         username: username,
@@ -41,12 +39,11 @@ module.exports = () => {
 
       data = JSON.parse(msg.utf8Data);
       if (data.type == "state") {
-        WORLD.rooms_by_id[data.content.name] = data.content;
-        // save {user:room_name} in the WORLD, need this when log out.
+        World.updateRoom(data.content);
+        // save {user:room_name} in the World, need this when log out.
         for (i = 0; i < data.content.people.length; i++) {
-          WORLD.users[data.content.people[i].username] = data.content.name;
+          World.users[data.content.people[i].username] = data.content.name;
         }
-        console.log("WORLD.users", WORLD.users);
         // send the state to everyone who is online.
         this.on_broadcast(data, connection, false);
       } else {
@@ -60,20 +57,20 @@ module.exports = () => {
       for (val in this.connection_dict) {
         if (this.connection_dict[val].connection == connection) {
           // get the name of room where the user is currently
-          let room_name = WORLD.users[val];
+          let room_name = World.users[val];
           var data = {
             type: "leftroom",
             username: val,
           };
-          // save the user's current state (redis.update_user) and also update the <WORLD> on the server
-          if (WORLD.rooms_by_id[room_name] == "undefined") {
+          // save the user's current state (redis.update_user) and also update the <World> on the server
+          if (World.rooms_by_id[room_name] == "undefined") {
             break;
           }
-          for (i = 0; i < WORLD.rooms_by_id[room_name].people.length; i++) {
-            if (WORLD.rooms_by_id[room_name].people[i].username == val) {
-              let user = WORLD.rooms_by_id[room_name].people[i];
+          for (i = 0; i < World.rooms_by_id[room_name].people.length; i++) {
+            if (World.rooms_by_id[room_name].people[i].username == val) {
+              let user = World.rooms_by_id[room_name].people[i];
               redis.update_user(user.username, user);
-              WORLD.rooms_by_id[room_name].people.splice(i, 1);
+              World.rooms_by_id[room_name].people.splice(i, 1);
             }
           }
           // delete the user's connection
@@ -110,7 +107,8 @@ module.exports = () => {
           );
           if (isValid) {
             this.connection_dict[user.username] = { user: user };
-            WORLD.rooms_by_id[user.room].people.push(user);
+            user = World.createUser(user);
+            World.addUser(user);
             res.send({
               status: 200,
               content: user,
@@ -127,18 +125,24 @@ module.exports = () => {
       });
       // for registeration
       if (user_num == user_list.length) {
-        user_info.id = user_id++;
-        let user = WORLD.createUser(user_info);
-        this.connection_dict[user.username] = { user: user };
-        res.send({
-          status: 200,
-          content: user_info,
-          msg: "Register successfully",
-        });
-        user_info.password = require("bcrypt").hashSync(user_info.password, 10);
-        redis.set("user_list", user_info, true);
+        this.on_register(res, user_info);
       }
     },
+    on_register: function (res, user_info) {
+      user_info.id = user_id++;
+      let user = World.createUser(user_info);
+      World.addUser(user);
+
+      this.connection_dict[user.username] = { user: user };
+      res.send({
+        status: 200,
+        content: user_info,
+        msg: "Register successfully",
+      });
+      user_info.password = require("bcrypt").hashSync(user_info.password, 10);
+      redis.set("user_list", user_info, true);
+    },
+
     // get data from database
     on_load: async function (key) {
       const value = await redis.get(key);
@@ -184,28 +188,24 @@ module.exports = () => {
         if (isClose(user.position, room.exits[0])) {
           room.people.splice(room.people.indexOf(user), 1);
           user.room = room.leadsTo;
-          room = WORLD.rooms_by_id[room.leadsTo];
+          room = World.rooms_by_id[room.leadsTo];
           room.people.push(user);
-          WORLD.users[user.username] = room.name;
-          // mychat.ShareRoomWelcome(room);
+          World.users[user.username] = room.name;
         } else break;
       }
     },
 
     on_update: function () {
       var dt = 0.03;
-      for (var i in WORLD.rooms_by_id) {
-        var room = WORLD.rooms_by_id[i];
-        //update state if iteracting with envronment objects
-        
-        //updating user position according to target
+      for (var i in World.rooms_by_id) {
+        var room = World.rooms_by_id[i];
 
         let receiver_list = [];
         for (let i = 0; i < room.people.length; i++) {
           let user = room.people[i];
           receiver_list.push(user.username);
           Server.on_userinteract(room, user);
-          
+
           user.target[0] = clamp(user.target[0], room.range[0], room.range[1]);
           var diff = user.target[0] - user.position;
           var delta = diff;
@@ -223,8 +223,8 @@ module.exports = () => {
             // if (!interaction) user.gait = "idle";
             user.gait = "idle";
           } else {
-            if (delta > 0) user.facing = FACING_RIGHT;
-            else user.facing = FACING_LEFT;
+            if (delta > 0) user.facing = Model.FACING_RIGHT;
+            else user.facing = Model.FACING_LEFT;
             user.gait = "walking";
           }
 
@@ -266,7 +266,6 @@ module.exports = () => {
     //       if(isInteract(user.target, val) && user.gait == "idle" && isInteract([user.position, 15], val)){
     //         console.log("you just interacted!");
 
-
     //       }
     //       // while (isInteract(user.target, val)) {
     //       //   if (user.position == user.target[0]) {
@@ -283,11 +282,10 @@ module.exports = () => {
     //   }
     // },
     start: async function () {
-      let data = await Server.on_load("room_list");
-      data.forEach((ele) => {
-        WORLD.rooms_by_id[ele.name] = ele;
-      });
-      // WORLD.rooms_by_id = data;
+      let room_res = await Server.on_load("room_list");
+      for (val in room_res) {
+        World.updateRoom(room_res[val]);
+      }
       setInterval(Server.on_update, interval * 1000);
     },
   };

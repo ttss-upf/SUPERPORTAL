@@ -1,7 +1,5 @@
 //var FIRSTLOOP = true;
 var LOOPS = 0;
-var BUBBLELOOPS = 0;
-var COUNTER = 0;
 var imgs = {};
 var View = {
   canvas: null,
@@ -12,6 +10,7 @@ var View = {
   angle: 0,
   weather: "snow",
   message_bubble: [],
+  
   init: function (canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
@@ -20,6 +19,19 @@ var View = {
       this.canvas_h = this.canvas.parentNode.getBoundingClientRect().height;
     }
     this.drawWeather();
+  },
+
+  gait_animations: {
+    idle: [0],
+    walking: [2, 3, 4, 5, 6, 7, 8, 9],
+    jumping: [0, 11, 12, 11, 0],
+  },
+
+  action_animations: {
+    talking: [0, 1],
+    crouchdown: [11],
+    none: [0],
+    sit: [13],
   },
 
   draw: function (current_room) {
@@ -35,7 +47,6 @@ var View = {
     this.ctx.translate(this.cam_offset, 0);
 
     if (current_room) this.drawRoom(current_room);
-
     //center point
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(-1, -1, 2, 2);
@@ -62,7 +73,22 @@ var View = {
       this.snow();
     }
   },
-  drawWeather: function () {
+
+  drawWeather: function (button) {
+    if (typeof button != "undefined")
+      if (button.innerHTML == "weather toggle") {
+        this.weather = "snow";
+        button.innerHTML = "snow";
+      } else if (button.innerHTML == "snow") {
+        button.innerHTML = "rain";
+        this.weather = "rain";
+      } else if (button.innerHTML == "rain") {
+        button.innerHTML = "sunny";
+        this.weather = "sunny";
+      } else if (button.innerHTML == "sunny") {
+        button.innerHTML = "snow";
+        this.weather = "snow";
+      }
     if (this.weather == "snow") var maxParts = 50;
     else if (this.weather == "rain") {
       var maxParts = 100;
@@ -80,117 +106,33 @@ var View = {
         });
       }
   },
-  rain: function () {
-    for (var b = 0; b < this.particles.length; b++) {
-      var p = this.particles[b];
-      p.x += p.xs;
-      p.y += p.ys;
-
-      if (p.x > this.canvas_w || p.y > this.canvas_h) {
-        p.x = Math.random() * this.canvas_w;
-        p.y = -20;
-      }
-    }
-  },
-
-  snow: function () {
-    this.angle += 0.01;
-    for (var i = 0; i < this.particles.length; i++) {
-      var p = this.particles[i];
-      //Updating X and Y coordinates
-      //We will add 1 to the cos function to prevent negative values which will lead flakes to move upwards
-      //Every particle has its own density which can be used to make the downward movement different for each flake
-      //Lets make it more random by adding in the radius
-      p.y += Math.cos(this.angle + p.d) + 1 + p.r / 2;
-      p.x += Math.sin(this.angle) * 2;
-
-      //Sending flakes back from the top when it exits
-      //Lets make it a bit more organic and let flakes enter from the left and right also.
-      if (p.x > this.canvas_w + 5 || p.x < -5 || p.y > this.canvas_h) {
-        if (i % 3 > 0) {
-          //66.67% of the flakes
-          this.particles[i] = {
-            x: Math.random() * this.canvas_w,
-            y: -10,
-            r: p.r,
-            d: p.d,
-          };
-        } else {
-          //If the flake is exitting from the right
-          if (Math.sin(this.angle) > 0) {
-            //Enter from the left
-            this.particles[i] = {
-              x: -5,
-              y: Math.random() * this.canvas_h,
-              r: p.r,
-              d: p.d,
-            };
-          } else {
-            //Enter from the right
-            this.particles[i] = {
-              x: this.canvas_w + 5,
-              y: Math.random() * this.canvas_h,
-              r: p.r,
-              d: p.d,
-            };
-          }
-        }
-      }
-    }
-  },
-  canvasToWorld: function (pos) {
-    return [
-      (pos[0] - this.canvas.width / 2) / this.scale - this.cam_offset,
-      (pos[1] - this.canvas.height / 2) / this.scale,
-    ];
-  },
-
-  worldToCanvas: function (pos) {
-    return [
-      (pos[0] + this.canvas.width / 2) * this.scale + this.cam_offset,
-      (pos[1] + this.canvas.height / 2) * this.scale,
-    ];
-  },
 
   drawRoom: function (current_room) {
     //draw background
     img = this.getImage(current_room.url);
     this.ctx.drawImage(img, -img.width / 2, -img.height / 2);
-
     //draw users
     for (var i = 0; i < current_room.people.length; ++i) {
       var user = current_room.people[i];
       this.drawUser(user);
       this.drawUsername(user);
-      //draw speech bubbles
-
-      for (ind = 0; ind < this.message_bubble.length; ind++) {
-        if (
-          this.message_bubble[ind].dur != 0 &&
-          user.username == this.message_bubble[ind].username
-        ) {
-          this.drawBubble(this.message_bubble[ind], user.position);
-        }
-      }
     }
+    // draw bubbles
+    this.drawBubble(user);
     //draw target
-    radius = 2;
-    this.ctx.beginPath();
-    if (!MYAPP.my_user) {
-      user = {};
-      user.target = [0, 0];
-    } else user = MYAPP.my_user;
-
-    this.ctx.arc(user.target[0], user.target[1], radius, 2 * Math.PI, false);
-    //console.log("target coordinates" + user.target);
-    this.ctx.fillStyle = "yellow";
-    this.ctx.fill();
-
+    this.drawTarget();
     //draw exits
+    this.drawExits(current_room);
+    //draw interactive objects
+    this.drawObjects(current_room);
+  },
+
+  drawExits: function (current_room) {
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(current_room.exits[0], current_room.exits[1], 5, 5);
+  },
 
-    //draw interactive objects
+  drawObjects: function (current_room) {
     if (current_room.objects) {
       Object.values(current_room.objects).forEach((val) => {
         centroid = val.centroid;
@@ -212,73 +154,77 @@ var View = {
         this.ctx.strokeStyle = "pink";
         this.ctx.stroke();
         this.ctx.closePath();
-        if (INTERACTION == true) {
-          console.log("WELL DONE!");
-          this.ctx.font = "10px Helvetica";
-          this.ctx.fillText("WELL DONE!", centroid[0], centroid[1]);
-        }
+        // if (INTERACTION == true) {
+        //   console.log("WELL DONE!");
+        //   this.ctx.font = "10px Helvetica";
+        //   this.ctx.fillText("WELL DONE!", centroid[0], centroid[1]);
+        // }
       });
     }
   },
 
-  gait_animations: {
-    idle: [0],
-    walking: [2, 3, 4, 5, 6, 7, 8, 9],
-    jumping: [0, 11, 12, 11, 0],
-  },
-
-  action_animations: {
-    talking: [0, 1],
-    crouchdown: [11],
-    none: [0],
-    sit: [13],
-  },
-
-  drawBubble: function (ele, x) {
-    let y = -50;
-    //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
-    console.log(ele);
-    text = ele.content;
-    username = ele.username;
-    ele.dur--;
-    // if (ele.dur == 0) {
-    //   // this.message_bubble = {};
-    //   // ele = {};
-    //   return;
-    // }
-    console.log("msg received for render: " + text + username);
-    w =
-      this.ctx.measureText(username).width +
-      this.ctx.measureText(text).width +
-      10;
-    h = 15;
-    radius = 5;
-    console.log("begin y at " + y + "x at " + x);
-    var r = x + w;
-    var b = y + h;
-
-    //draw bubble
+  drawTarget: function () {
+    radius = 2;
     this.ctx.beginPath();
-    console.log("begin bubble drawing");
-    this.ctx.font = "7px Helvetica";
-    this.ctx.strokeStyle = "black";
-    this.ctx.lineWidth = "1";
-    this.ctx.moveTo(x + radius, y);
-    this.ctx.lineTo(r - radius, y);
-    this.ctx.quadraticCurveTo(r, y, r, y + radius);
-    this.ctx.lineTo(r, y + h - radius);
-    this.ctx.quadraticCurveTo(r, b, r - radius, b);
-    this.ctx.lineTo(x + radius, b);
-    this.ctx.quadraticCurveTo(x, b, x, b - radius);
-    this.ctx.lineTo(x, y + radius);
-    this.ctx.quadraticCurveTo(x, y, x + radius, y);
-    this.ctx.fillStyle = "white";
+    if (!MyCanvas.my_user) {
+      user = {};
+      user.target = [0, 0];
+    } else user = MyCanvas.my_user;
+
+    this.ctx.arc(user.target[0], user.target[1], radius, 2 * Math.PI, false);
+    //console.log("target coordinates" + user.target);
+    this.ctx.fillStyle = "yellow";
     this.ctx.fill();
-    this.ctx.stroke();
-    this.ctx.fillStyle = "black";
-    this.ctx.fillText(text, x + 10, y + 10);
-    // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
-    console.log("end bubble drawing");
+  },
+
+  drawBubble: function (user) {
+    for (ind = 0; ind < this.message_bubble.length; ind++) {
+      if (
+        this.message_bubble[ind].dur != 0 &&
+        user.username == this.message_bubble[ind].username
+      ) {
+        ele = this.message_bubble[ind];
+        x = user.position;
+        let y = -50;
+        //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
+        text = ele.content;
+        username = ele.username;
+        ele.dur--;
+        // console.log("msg received for render: " + text + username);
+        w =
+          this.ctx.measureText(username).width +
+          this.ctx.measureText(text).width +
+          10;
+        h = 15;
+        radius = 5;
+        // console.log("begin y at " + y + "x at " + x);
+        var r = x + w;
+        var b = y + h;
+
+        //draw bubble
+        this.ctx.beginPath();
+        // console.log("begin bubble drawing");
+        this.ctx.font = "7px Helvetica";
+        this.ctx.strokeStyle = "black";
+        this.ctx.lineWidth = "1";
+        this.ctx.moveTo(x + radius, y);
+        this.ctx.lineTo(r - radius, y);
+        this.ctx.quadraticCurveTo(r, y, r, y + radius);
+        this.ctx.lineTo(r, y + h - radius);
+        this.ctx.quadraticCurveTo(r, b, r - radius, b);
+        this.ctx.lineTo(x + radius, b);
+        this.ctx.quadraticCurveTo(x, b, x, b - radius);
+        this.ctx.lineTo(x, y + radius);
+        this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        this.ctx.fillStyle = "white";
+        this.ctx.fill();
+        this.ctx.stroke();
+        this.ctx.fillStyle = "black";
+        this.ctx.fillText(text, x + 10, y + 10);
+        // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
+        // console.log("end bubble drawing");
+      }
+    }
   },
 
   drawUser: function (user) {
@@ -393,10 +339,99 @@ var View = {
     this.ctx.fillText(username, x, y);
   },
 
+  canvasToWorld: function (pos) {
+    return [
+      (pos[0] - this.canvas.width / 2) / this.scale - this.cam_offset,
+      (pos[1] - this.canvas.height / 2) / this.scale,
+    ];
+  },
+
+  worldToCanvas: function (pos) {
+    return [
+      (pos[0] + this.canvas.width / 2) * this.scale + this.cam_offset,
+      (pos[1] + this.canvas.height / 2) * this.scale,
+    ];
+  },
+
   getImage: function (url) {
     if (imgs[url]) return imgs[url];
     var img = (imgs[url] = new Image());
     img.src = url;
     return img;
+  },
+  rain: function () {
+    for (var b = 0; b < this.particles.length; b++) {
+      var p = this.particles[b];
+      p.x += p.xs;
+      p.y += p.ys;
+
+      if (p.x > this.canvas_w || p.y > this.canvas_h) {
+        p.x = Math.random() * this.canvas_w;
+        p.y = -20;
+      }
+    }
+  },
+
+  snow: function () {
+    this.angle += 0.01;
+    for (var i = 0; i < this.particles.length; i++) {
+      var p = this.particles[i];
+      p.y += Math.cos(this.angle + p.d) + 1 + p.r / 2;
+      p.x += Math.sin(this.angle) * 2;
+      if (p.x > this.canvas_w + 5 || p.x < -5 || p.y > this.canvas_h) {
+        if (i % 3 > 0) {
+          this.particles[i] = {
+            x: Math.random() * this.canvas_w,
+            y: -10,
+            r: p.r,
+            d: p.d,
+          };
+        } else {
+          if (Math.sin(this.angle) > 0) {
+            this.particles[i] = {
+              x: -5,
+              y: Math.random() * this.canvas_h,
+              r: p.r,
+              d: p.d,
+            };
+          } else {
+            this.particles[i] = {
+              x: this.canvas_w + 5,
+              y: Math.random() * this.canvas_h,
+              r: p.r,
+              d: p.d,
+            };
+          }
+        }
+      }
+    }
+  },
+
+  showText: function (msg, style) {
+    var elem = document.createElement("div");
+    elem.className = style;
+    var div = document.createElement("div");
+    div.className = "username";
+    time = msg.timestamp;
+    div.innerHTML = msg.username + " " + time;
+    if (msg.type === "sysmsg") {
+      div.style.display = "none";
+    }
+    elem.appendChild(div);
+    let div2 = document.createElement("div");
+    div2.className = "publishedmsg";
+    div2.classList.add(msg.type);
+    div2.innerHTML = msg.content;
+    elem.appendChild(div2);
+    if (div2.innerHTML.trim() == "") {
+      return;
+    } else {
+      var conversation = document.querySelector("#conversation");
+      conversation.appendChild(elem);
+      const lastdiv = document.querySelector(
+        "#conversation > div:last-of-type"
+      );
+      lastdiv.scrollIntoView();
+    }
   },
 };

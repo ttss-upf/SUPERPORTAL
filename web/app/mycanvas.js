@@ -1,10 +1,9 @@
-var MYAPP = {
+var MyCanvas = {
   mouse_pos: [0, 0],
   current_room: null,
   clickableCanvas: null,
-  url: "http://localhost:9022/",
   init: async function () {
-    this.my_user = MYCHAT.myspace.my_user;
+    this.my_user = MyChat.my_user;
     this.clickableCanvas = document.querySelector("#Universe");
     this.clickableCanvas.addEventListener("mousedown", this.onMouse.bind(this));
     this.clickableCanvas.addEventListener("mousemove", this.onMouse.bind(this));
@@ -37,11 +36,12 @@ var MYAPP = {
           user.target = this.my_user.target;
         }
       });
+      room_name = this.current_room.name;
       data = {
         type: "state",
-        content: this.current_room,
+        content: this.current_room
       };
-      MYCHAT.server.send(JSON.stringify(data));
+      MyChat.server.send(JSON.stringify(data));
     }
   },
 
@@ -54,7 +54,7 @@ var MYAPP = {
 };
 
 function loop() {
-  MYAPP.draw();
+  MyCanvas.draw();
   requestAnimationFrame(loop);
 }
 

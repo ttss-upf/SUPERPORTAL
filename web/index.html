@@ -1,90 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-        <meta charset="UTF-8">
-        <title>SUPERPORTAL</title>
-        <link type="text/css" rel="stylesheet" media="all" href="./css/style.css" />
-        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
-    </head>
-    <body>
-        <!--<div id="IDprompt">Enter username</div>-->
-        <div id="main" class="container">
-            <div id="history">
-                <div class="toolbarhist">
-                    <!--<h2>History of conversations</h2>-->    
-                    <div id="myprofile">
-                        <h3>SPACE CUSTOMIZATION</h3>
-                    </div>
-                    <!-- <div id="connectionStatus">
-                        <img class="light">
-                    </div> -->
-                    <!-- <div class="righticons">
-                        <img src="./images/3dots.png" class="icons">
-                    </div> -->
-                </div>
-				<!--Replace header above with my pp + other shortcuts-->
-                <div class="fill">
-                <button class="connectButton">logout</button>
-                <!-- <button class="lobbyButton">lobby &#8634;</button> -->
-                <button class="weatherButton">weather toggle</button>
-                <!-- <button class="usersButton">&#127968;</button> -->
-                </div>
-                <div class="histlist">
-                <!--History of chat-->
-                <div id="messages">
-                    <div class="toolbarmess">
-                        <div class="currentcontact">      
-                            <h3 id="roomName">CHAT</h3>
-                        </div>
-                    </div>
-                    <div id="conversation">
-                        <!--Actual conversation, new content dynamically added here (scrollable)-->
-                        <div class="joinleft" style="display: none">
-                            <div class="username" style="display: none">system message</div>
-                            <div class="publishedmsg sysmsg" style="display: none">
-                                lastu joined the room
-                            </div>
-                        </div>
-                        <div class="received" style="display: none">
-                            <div class="username" style="display: none">Fembot111</div>
-                            <div class="publishedmsg" style="display: none">this is a message I received from someone</div>
-                        </div>
-                        <div class="sent" style="display: none">
-                            <div class="myusername" style="display: none">lastuadri</div>
-                            <div class="publishedmsg" style="display: none">hi</div>
-                        </div>
-                    </div>
-                    
-                    <div class="fill" id="typesendmsg">
-                    <textarea class="currentmessage" type="text" placeholder="type a message"></textarea>
-                    <input id="sendbutton" class="sendmessage" type="button" value="send">
-                    </div>
-                </div>
-
-                </div>
-            </div>
-            
-        </div>
-
-        <canvas id="Universe" width="512" height="512"></canvas>
-        <div id="EnterApp">
-          <img id="LandingImg" src="./images/pixelportal1.png" />
-          <!-- <button id="start">Welcome</button> -->
-          <div id="userpwd">
-            <label for="fname">Username</label>
-            <input type="text" id="input_username" name="fname" /><br /><br />
-            <label for="lname">Password</label>
-            <input type="password" id="input_password" name="lname" /><br /><br />
-            <input id="login" type="button" value="Log in" class="btn" />
-            <!-- <input id="register" type="button" value="Register" class="btn" /> -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta charset="UTF-8" />
+    <title>SUPERPORTAL</title>
+    <link type="text/css" rel="stylesheet" media="all" href="./css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="main" class="container">
+      <div id="history">
+        <div class="toolbarhist">
+          <div id="myprofile">
+            <h3>SPACE CUSTOMIZATION</h3>
           </div>
         </div>
-        <script src="./app/util.js"></script>
-        <script type="text/javascript" src="./app/code.js"></script>
-        <script src="./app/model.js"></script>
-        <script src="./app/view.js"></script>
-        <script src="./app/controller.js"></script>
-    </body>
-    
+        <div class="fill">
+          <button class="connectButton">logout</button>
+          <button class="weatherButton">weather toggle</button>
+        </div>
+        <div class="histlist">
+          <div id="messages">
+            <div class="toolbarmess">
+              <div class="currentcontact">
+                <h3 id="roomName">CHAT</h3>
+              </div>
+            </div>
+            <div id="conversation">
+              <div class="joinleft" style="display: none">
+                <div class="username" style="display: none">system message</div>
+                <div class="publishedmsg sysmsg" style="display: none">
+                  lastu joined the room
+                </div>
+              </div>
+              <div class="received" style="display: none">
+                <div class="username" style="display: none">Fembot111</div>
+                <div class="publishedmsg" style="display: none">
+                  this is a message I received from someone
+                </div>
+              </div>
+              <div class="sent" style="display: none">
+                <div class="myusername" style="display: none">lastuadri</div>
+                <div class="publishedmsg" style="display: none">hi</div>
+              </div>
+            </div>
+
+            <div class="fill" id="typesendmsg">
+              <textarea
+                class="currentmessage"
+                type="text"
+                placeholder="type a message"
+              ></textarea>
+              <input
+                id="sendbutton"
+                class="sendmessage"
+                type="button"
+                value="send"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="Universe" width="512" height="512"></canvas>
+    <div id="EnterApp">
+      <img id="LandingImg" />
+      <div id="userpwd">
+        <label for="fname">Username</label>
+        <input type="text" id="input_username" name="fname" /><br /><br />
+        <label for="lname">Password</label>
+        <input type="password" id="input_password" name="lname" /><br /><br />
+        <input id="login" type="button" value="Log in" class="btn" />
+      </div>
+    </div>
+    <script src="./app/model.js"></script>
+    <script src="./config.js"></script>
+    <script src="./app/mychat.js"></script>
+    <script src="./app/view.js"></script>
+    <script src="./app/mycanvas.js"></script>
+  </body>
 </html>

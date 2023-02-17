@@ -93,7 +93,6 @@ var World = {
     return user;
   },
   addUser: function (user) {
-    console.log(user);
     if (this.rooms_by_id[user.room] != undefined)
       this.rooms_by_id[user.room].people.push(user);
     return user;

@@ -20,9 +20,9 @@ var MyChat = {
     this.textarea.addEventListener("keydown", this.inputText.bind(this, "3")); // send message on Enter
     this.sendButton.onclick = this.inputText.bind(this, "1"); // send message on "send" button click
   },
-  connect: async function (username) {
+  connect: async function () {
     console.log("connecting");
-    this.server = new WebSocket(Config.WS_URL + "?username=" + username);
+    this.server = new WebSocket(Config.WS_URL + this.my_user.room + "?username=" + this.my_user.username);
     this.server.onopen = this.receiveText.bind(this);
     this.server.onmessage = this.receiveText.bind(this);
     await MyCanvas.init();
@@ -53,7 +53,7 @@ var MyChat = {
 
     let app = document.querySelector("#EnterApp");
     app.style.display = "none";
-    await MyChat.connect(this.my_user.username);
+    await MyChat.connect();
   },
 
   fetchData: async function (url, data) {
@@ -113,8 +113,9 @@ var MyChat = {
       case "joinedroom":
         user = World.createUser(data.content);
         World.addUser(user);
+        console.log(data);
         msg = {
-          content: "User " + data.username + " has joined the room.",
+          content: user.username + " has joined the room.",
           username: "system message",
           type: "sysmsg",
           timestamp: new Date().toTimeString().slice(0, 5),
@@ -128,7 +129,7 @@ var MyChat = {
             MyCanvas.current_room.people.splice(i, 1);
         }
         msg = {
-          content: "User " + data.username + " has left the room.",
+          content: data.content.username + " has left the room.",
           username: "system message",
           type: "sysmsg",
           timestamp: new Date().toTimeString().slice(0, 5),

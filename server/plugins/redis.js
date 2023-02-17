@@ -29,23 +29,24 @@ async function get(key) {
   return value;
 }
 
-async function update_user(name, value){
+async function update_user(name, value) {
   // update the user when log out
   let list = await get("user_list");
-  if(list.length != undefined)
-  for(i = 0; i < list.length; i++){
-    if(list[i].username == name){
-      list[i].position = value.position;
-      list[i].room = value.room;
-      list[i].target = [value.position, 0]
-      break;
+  if (typeof list == "undefined" || !list) return;
+  if (list.length != undefined)
+    for (i = 0; i < list.length; i++) {
+      if (list[i].username == name) {
+        list[i].position = value.position;
+        list[i].room = value.room;
+        list[i].target = [value.position, 0];
+        break;
+      }
     }
-  }
-  await set("user_list", list)
+  await set("user_list", list);
 }
 
 module.exports = {
   get,
   set,
-  update_user
+  update_user,
 };

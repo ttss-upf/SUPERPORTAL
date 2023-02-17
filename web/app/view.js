@@ -10,7 +10,7 @@ var View = {
   angle: 0,
   weather: "snow",
   message_bubble: [],
-  
+
   init: function (canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
@@ -116,9 +116,9 @@ var View = {
       var user = current_room.people[i];
       this.drawUser(user);
       this.drawUsername(user);
+      this.drawBubble(user);
     }
     // draw bubbles
-    this.drawBubble(user);
     //draw target
     this.drawTarget();
     //draw exits
@@ -178,51 +178,60 @@ var View = {
   },
 
   drawBubble: function (user) {
-    for (ind = 0; ind < this.message_bubble.length; ind++) {
-      if (
-        this.message_bubble[ind].dur != 0 &&
-        user.username == this.message_bubble[ind].username
-      ) {
-        ele = this.message_bubble[ind];
-        x = user.position;
-        let y = -50;
-        //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
-        text = ele.content;
-        username = ele.username;
-        ele.dur--;
-        // console.log("msg received for render: " + text + username);
-        w =
-          this.ctx.measureText(username).width +
-          this.ctx.measureText(text).width +
-          10;
-        h = 15;
-        radius = 5;
-        // console.log("begin y at " + y + "x at " + x);
-        var r = x + w;
-        var b = y + h;
+    if (this.message_bubble.length == 0) return;
+    for (ind = this.message_bubble.length - 1; ind > 0; ind--) {
+      if (this.message_bubble[ind].dur != 0) {
+        if (user.username == this.message_bubble[ind].username) {
+          ele = this.message_bubble[ind];
+          x = user.position;
+          let y = -50;
+          //thoughts: we should limit number of characters in user's input to limit the size of the bubble.
+          text = ele.content;
+          username = ele.username;
+          ele.dur--;
+          for (i = 0; i < this.message_bubble.length; i++) {
+            if (
+              this.message_bubble[i] != ele &&
+              this.message_bubble[i].username == ele.username
+            )
+              this.message_bubble[i].dur = 0;
+          }
+          // console.log("msg received for render: " + text + username);
+          w =
+            this.ctx.measureText(username).width +
+            this.ctx.measureText(text).width +
+            10;
+          h = 15;
+          radius = 5;
+          // console.log("begin y at " + y + "x at " + x);
+          var r = x + w;
+          var b = y + h;
 
-        //draw bubble
-        this.ctx.beginPath();
-        // console.log("begin bubble drawing");
-        this.ctx.font = "7px Helvetica";
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineWidth = "1";
-        this.ctx.moveTo(x + radius, y);
-        this.ctx.lineTo(r - radius, y);
-        this.ctx.quadraticCurveTo(r, y, r, y + radius);
-        this.ctx.lineTo(r, y + h - radius);
-        this.ctx.quadraticCurveTo(r, b, r - radius, b);
-        this.ctx.lineTo(x + radius, b);
-        this.ctx.quadraticCurveTo(x, b, x, b - radius);
-        this.ctx.lineTo(x, y + radius);
-        this.ctx.quadraticCurveTo(x, y, x + radius, y);
-        this.ctx.fillStyle = "white";
-        this.ctx.fill();
-        this.ctx.stroke();
-        this.ctx.fillStyle = "black";
-        this.ctx.fillText(text, x + 10, y + 10);
-        // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
-        // console.log("end bubble drawing");
+          //draw bubble
+          this.ctx.beginPath();
+          // console.log("begin bubble drawing");
+          this.ctx.font = "7px Helvetica";
+          this.ctx.strokeStyle = "black";
+          this.ctx.lineWidth = "1";
+          this.ctx.moveTo(x + radius, y);
+          this.ctx.lineTo(r - radius, y);
+          this.ctx.quadraticCurveTo(r, y, r, y + radius);
+          this.ctx.lineTo(r, y + h - radius);
+          this.ctx.quadraticCurveTo(r, b, r - radius, b);
+          this.ctx.lineTo(x + radius, b);
+          this.ctx.quadraticCurveTo(x, b, x, b - radius);
+          this.ctx.lineTo(x, y + radius);
+          this.ctx.quadraticCurveTo(x, y, x + radius, y);
+          this.ctx.fillStyle = "white";
+          this.ctx.fill();
+          this.ctx.stroke();
+          this.ctx.fillStyle = "black";
+          this.ctx.fillText(text, x + 10, y + 10);
+          // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
+          // console.log("end bubble drawing");
+        }
+      } else {
+        this.message_bubble.splice(ind, 1);
       }
     }
   },

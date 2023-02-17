@@ -1,20 +1,12 @@
-var RENDERMYMSG = null; // bad, just testing something
-var RENDERMSG = null;
-var mychat = {
+var MYCHAT = {
   url: "http://localhost:9022/",
   window: null,
-  LobbyButton: null,
   textarea: null,
   sendbutton: null,
   myspace: {
     my_room: null,
     my_username: null,
   },
-  LinkIDtoName: [],
-  mydatabase: { type: "history", content: [] },
-  NumOnlineUsersByRoom: null,
-  OnlineRooms: null,
-  UsersInThisRoom: null,
   LoginButton: null,
   LogoutButton: null,
   input_username: null,
@@ -22,18 +14,14 @@ var mychat = {
   server: null,
 
   init: function () {
-    //loading the lobby before connection
-    this.LoginButton = document.querySelector("#login");
     this.window = document.querySelector("#main");
     this.textarea = document.querySelector("textarea");
-    this.LogoutButton = document.querySelector(".connectButton");
-    this.LobbyButton = document.querySelector(".lobbyButton");
-    this.WeatherButton = document.querySelector(".weatherButton");
-    this.UsersButton = document.querySelector(".usersButton");
+    this.LoginButton = document.querySelector("#login");
     this.sendbutton = document.querySelector("#sendbutton");
-    this.input_username = document.querySelector("#input_username");
+    this.LogoutButton = document.querySelector(".connectButton");
+    this.WeatherButton = document.querySelector(".weatherButton");
     this.input_password = document.querySelector("#input_password");
-
+    this.input_username = document.querySelector("#input_username");
     this.LoginButton.addEventListener("click", this.onLoginClick.bind(this));
     this.LogoutButton.addEventListener("click", this.onLogoutClick.bind(this));
     this.WeatherButton.addEventListener(
@@ -78,7 +66,7 @@ var mychat = {
       MYAPP.current_room = WORLD.rooms_by_id[this.myspace.my_user.room];
       let app = document.querySelector("#EnterApp");
       app.style.display = "none";
-      await mychat.Connect(this.myspace.my_username);
+      await MYCHAT.Connect(this.myspace.my_username);
     } else {
       alert(data.msg);
     }
@@ -281,3 +269,5 @@ var mychat = {
     this.showText(msg, "joinleft");
   },
 };
+MYCHAT.init();
+

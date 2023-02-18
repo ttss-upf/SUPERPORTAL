@@ -29,7 +29,6 @@ var MyChat = {
       this.selectBox.add(option);
     }
   },
-
   connect: async function () {
     console.log("connecting");
     this.server = new WebSocket(

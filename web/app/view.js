@@ -65,9 +65,11 @@ var View = {
     this.canvas.width = rect.width - 400;
     this.canvas.height = 0.97 * rect.height;
     this.ctx.imageSmoothingEnabled = false;
+    for (user in current_room.people)
+      if (MyCanvas.my_user.username == current_room.people[user].username)
+        this.cam_offset = lerp(this.cam_offset, -current_room.people[user].position, 0.025);
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();
-
     this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2); // now the (0,0) is in the center of the canvas
     this.ctx.scale(this.scale, this.scale);
     this.ctx.translate(this.cam_offset, 0);
@@ -215,7 +217,7 @@ var View = {
           w =
             //this.ctx.measureText(username).width +
             this.ctx.measureText(text).width+10;
-
+          
           h = 15;
           radius = 5;
           // console.log("begin y at " + y + "x at " + x);
@@ -357,7 +359,7 @@ var View = {
     var r = x + w;
     var b = y + h;
 
-    this.ctx.font = "10px Helvetica";
+    this.ctx.font = "7px Helvetica";
     this.ctx.fillText(username, x, y);
   },
 
@@ -478,4 +480,5 @@ var View = {
       ? (document.querySelector(".createRoomForm").style.display = "block")
       : (document.querySelector(".createRoomForm").style.display = "none");
   },
+
 };

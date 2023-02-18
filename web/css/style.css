@@ -90,6 +90,7 @@ input {
   top: 0px;
   left: 350px;
   border: 1px solid #000000;
+  background-color: black;
   /* display: none; */
 }
 
@@ -558,20 +559,22 @@ button:focus {
 .checkbox {
   background-color: rgba(118, 109, 217, 0.8);
   border-radius: 10px;
+  position: absolute;
+  left: -175px;
   height: fit-content;
-  width:fit-content;
+  width: 600px;
   padding: 14px;
   list-style: none;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   margin-top: 20px;
-  margin-left: -150px;
 }
 .checkbox_container {
   display: block;
   position: relative;
-  padding-left: 35px;
+  padding-left: 30px;
+  padding-right: 10px;
   cursor: pointer;
   font-size: 18px;
   -webkit-user-select: none;

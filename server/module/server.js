@@ -163,7 +163,19 @@ module.exports = () => {
           break;
 
         case "newroom":
-          console.log(123);
+          // set path from old room to new room
+          new_room = data.content;
+          linked_room_name = Object.keys(new_room.exits)[0];
+          linked_room = World.rooms_by_id[linked_room_name];
+          if(linked_room.leadsTo.length >= 2){
+            return;
+          }
+          linked_room.leadsTo[1] = new_room.name;
+          exits_coordinate = Model.ROOMS[linked_room_name].exits_coordinate[1];
+          linked_room.exits[new_room.name] = exits_coordinate;
+          // set path from new room to old room
+          World.updateRoom(new_room);
+          console.log("current World", World.rooms_by_id);
           break;
 
         default:

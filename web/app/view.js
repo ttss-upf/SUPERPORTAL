@@ -213,9 +213,9 @@ var View = {
           }
           // console.log("msg received for render: " + text + username);
           w =
-            this.ctx.measureText(username).width +
-            this.ctx.measureText(text).width +
-            10;
+            //this.ctx.measureText(username).width +
+            this.ctx.measureText(text).width+10;
+
           h = 15;
           radius = 5;
           // console.log("begin y at " + y + "x at " + x);
@@ -241,7 +241,7 @@ var View = {
           this.ctx.fill();
           this.ctx.stroke();
           this.ctx.fillStyle = "black";
-          this.ctx.fillText(text, x + 10, y + 10);
+          this.ctx.fillText(text, x+5, y+10);
           // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
           // console.log("end bubble drawing");
         }

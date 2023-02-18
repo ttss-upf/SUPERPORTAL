@@ -29,6 +29,7 @@ var MyChat = {
       this.selectBox.add(option);
     }
   },
+
   connect: async function () {
     console.log("connecting");
     this.server = new WebSocket(
@@ -77,6 +78,7 @@ var MyChat = {
   handleText: function (data) {
     switch (data.type) {
       case "login":
+        user = data.content;
         msg = {
           content: "Welcome to Super Portal, " + this.my_user.username,
           username: "system message",
@@ -84,19 +86,19 @@ var MyChat = {
           timestamp: new Date().toTimeString().slice(0, 5),
         };
         View.showText(msg, "joinleft");
+        this.shareRoomWelcome(World.rooms_by_id[user.room].welcome_msg);
         break;
 
       case "joinedroom":
         user = World.createUser(data.content);
         World.addUser(user);
         msg = {
-          content: user.username + " has joined the room.",
+          content: user.username + " has joined " + user.room,
           username: "system message",
           type: "sysmsg",
           timestamp: new Date().toTimeString().slice(0, 5),
         };
         View.showText(msg, "joinleft");
-        this.shareRoomWelcome(World.rooms_by_id[user.room].welcome_msg);
         break;
 
       case "leftroom":
@@ -257,17 +259,20 @@ var MyChat = {
       View.showText(msg, "joinleft");
     } else {
       var room_model = Model.ROOMS[room_key];
-      var leadsTo = Object.values(World.rooms_by_id)[0].name;
+      var leads_to_room_name = Object.values(World.rooms_by_id)[0].name;
+      var exits = {};
+      exits[leads_to_room_name] =  room_model.exits_coordinate[0];
       var new_room = World.createRoom({
         name: room_name,
         url: url,
         welcome_msg: welcome_msg,
-        exits: { leadsTo: room_model.exits_coordinate[0] },
-        leadsTo: [leadsTo],
+        exits: exits,
+        leadsTo: [leads_to_room_name],
       });
+      console.log(new_room);
       World.updateRoom(new_room);
       var msg = {
-        type: "state",
+        type: "newroom",
         content: new_room,
         timestamp: new Date().toTimeString().slice(0, 5),
       };

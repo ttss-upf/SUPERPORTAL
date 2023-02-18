@@ -20,6 +20,12 @@
         </div>
         <div class="fill">
           <button class="connectButton">logout</button>
+          <button
+            class="newroomButton"
+            onclick="View.showForm();"
+          >
+            new room
+          </button>
           <button class="weatherButton">weather toggle</button>
         </div>
         <div class="histlist">
@@ -67,6 +73,8 @@
     </div>
 
     <canvas id="Universe" width="512" height="512"></canvas>
+
+    <canvas id="gallery" width="512" height="512"></canvas>
     <div id="EnterApp">
       <img id="LandingImg" />
       <div id="userpwd">
@@ -75,12 +83,80 @@
         <label for="lname">Password</label>
         <input type="password" id="input_password" name="lname" /><br /><br />
         <input id="login" type="button" value="Log in" class="btn" />
+        <div class="checkbox">
+          <label class="checkbox_container"
+            >Noah
+            <input type="radio" checked="checked" name="radio" value="1" />
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox_container"
+            >Oliver
+            <input type="radio" name="radio" value="2" />
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox_container"
+            >George
+            <input type="radio" name="radio" value="3" />
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox_container"
+            >Leo
+            <input type="radio" name="radio" value="4" />
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox_container">
+            Theo
+            <input type="radio" name="radio" value="5" />
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox_container">
+            Freddie
+            <input type="radio" name="radio" value="6" />
+            <span class="checkmark"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="createRoomForm" id="createRoomForm" style="display: none">
+      <div class="fill-vertical">
+        Room Name
+        <input
+          type="text"
+          class="currentmessage"
+          placeholder="input the room name"
+        />
+        Background
+        <input
+          type="text"
+          class="currentmessage"
+          placeholder="choose the background"
+        />
+        Welcome Message
+        <input
+          type="text"
+          class="currentmessage"
+          placeholder="input the welcome message"
+        />
+        Linked Room
+        <input
+          type="text"
+          class="currentmessage"
+          placeholder="choose the linked room"
+        />
+        <input id="save" class="save" type="button" value="save" />
+        <input
+          class="save"
+          type="button"
+          value="close"
+          onclick="View.showForm();"
+        />
       </div>
     </div>
     <script src="./app/model.js"></script>
     <script src="./config.js"></script>
-    <script src="./app/mychat.js"></script>
     <script src="./app/view.js"></script>
+    <script src="./app/mychat.js"></script>
     <script src="./app/mycanvas.js"></script>
+    <script src="./app/main.js"></script>
   </body>
 </html>

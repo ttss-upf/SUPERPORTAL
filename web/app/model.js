@@ -1,4 +1,4 @@
-var STATIC_RESOURCE_ROOT = "./images/";
+var STATIC_RESOURCE_ROOT = "../images/";
 // var STATIC_RESOURCE_ROOT =  "./p2/images/"
 var Model = {
   ROOM_DEFAULT_BACKGROUND: STATIC_RESOURCE_ROOT + "pirate_island.png",
@@ -11,7 +11,7 @@ var Model = {
   // room info
   ROOM_DEFAULT_NAME: "DEFAULT ROOMRNAME",
   ROOM_DEFAULT_RANGE: [-300, 300],
-  ROOM_DEFAULT_LEADSTO: "",
+  ROOM_DEFAULT_LEADSTO: [],
   ROOM_DEFAULT_OBJECT: {},
   ROOM_DEFAULT_WEATHER: "snow",
   ROOM_DEFAULT_WELCOME_MSG: "welcome",
@@ -33,20 +33,6 @@ function User(obj) {
   this.target = obj.target || [0, 0];
   this.room = obj.room || Model.CHARACTER_DEFAULT_ROOM;
 }
-// User.prototype.toJson = function (obj) {
-//   let data = {
-//     id: obj.id,
-//     position: obj.position,
-//     avatar: obj.avatar,
-//     username: obj.username,
-//     facing: obj.facing,
-//     gait: obj.gait,
-//     action: obj.action,
-//     target: [0, 0],
-//     room: obj.room,
-//   };
-//   return data;
-// };
 
 function Room(obj) {
   this.name = obj.name || Model.ROOM_DEFAULT_NAME;

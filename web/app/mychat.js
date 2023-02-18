@@ -4,6 +4,7 @@ var MyChat = {
 
   init: function () {
     this.window = document.querySelector("#main");
+    this.saveButton = document.querySelector("#save");
     this.textarea = document.querySelector("textarea");
     this.loginButton = document.querySelector("#login");
     this.sendButton = document.querySelector("#sendbutton");
@@ -12,6 +13,8 @@ var MyChat = {
     this.input_username = document.querySelector("#input_username");
     this.loginButton.addEventListener("click", this.onLoginClick.bind(this));
     this.logoutButton.addEventListener("click", this.onLogoutClick.bind(this));
+    this.saveButton.addEventListener("click", this.saveButtonClick.bind(this));
+
     this.WeatherButton = document.querySelector(".weatherButton");
     this.WeatherButton.addEventListener(
       "click",
@@ -22,38 +25,12 @@ var MyChat = {
   },
   connect: async function () {
     console.log("connecting");
-    this.server = new WebSocket(Config.WS_URL + this.my_user.room + "?username=" + this.my_user.username);
+    this.server = new WebSocket(
+      Config.WS_URL + this.my_user.room + "?username=" + this.my_user.username
+    );
     this.server.onopen = this.receiveText.bind(this);
     this.server.onmessage = this.receiveText.bind(this);
     await MyCanvas.init();
-  },
-
-  onLoginClick: async function (event) {
-    if (this.input_username.value == "" || this.input_password.value == "") {
-      alert("please input all the information");
-      return;
-    }
-    let user = {
-      username: this.input_username.value,
-      password: this.input_password.value,
-    };
-
-    let user_res = await this.fetchData(Config.HTTP_URL + "login", user);
-    if (user_res.status != 200) {
-      alert(user_res.msg);
-      return;
-    }
-    let room_res = await this.fetchData(Config.HTTP_URL + "load/room_list");
-    for(val in room_res){
-      World.updateRoom(room_res[val])
-    }
-    this.my_user = World.createUser(user_res.content);
-    World.addUser(this.my_user);
-    MyCanvas.current_room = World.rooms_by_id[this.my_user.room];
-
-    let app = document.querySelector("#EnterApp");
-    app.style.display = "none";
-    await MyChat.connect();
   },
 
   fetchData: async function (url, data) {
@@ -71,15 +48,6 @@ var MyChat = {
     }
     result = await res.json();
     return result;
-  },
-
-  onLogoutClick: function () {
-    this.server.close();
-    this.connectKilled();
-  },
-
-  onWeatherClick: function () {
-    View.drawWeather(this.WeatherButton);
   },
 
   connectKilled: function () {
@@ -215,6 +183,66 @@ var MyChat = {
     }
   },
 
+  onLoginClick: async function (event) {
+    if (this.input_username.value == "" || this.input_password.value == "") {
+      alert("please input all the information");
+      return;
+    }
+    let user = {
+      username: this.input_username.value,
+      password: this.input_password.value,
+    };
+    inputs = document.getElementsByName("radio");
+    inputs.forEach((element) => {
+      if (element.checked == true) {
+        user.avatar =
+          STATIC_RESOURCE_ROOT + "character" + element.value + ".png";
+      }
+    });
+    let user_res = await this.fetchData(Config.HTTP_URL + "login", user);
+    if (user_res.status != 200) {
+      alert(user_res.msg);
+      return;
+    }
+    let room_res = await this.fetchData(Config.HTTP_URL + "load/room_list");
+    for (val in room_res) {
+      World.updateRoom(room_res[val]);
+    }
+    inputs = document.getElementsByName("radio");
+    inputs.forEach((element) => {
+      if (element.checked == true) {
+        user_res.content.avatar =
+          STATIC_RESOURCE_ROOT + "character" + element.value + ".png";
+        console.log("user_res.content.avatar", user_res.content.avatar);
+      }
+    });
+    // console.log("user_res.content", user_res.content);
+    this.my_user = World.createUser(user_res.content);
+    World.addUser(this.my_user);
+    MyCanvas.current_room = World.rooms_by_id[this.my_user.room];
+
+    let app = document.querySelector("#EnterApp");
+    app.style.display = "none";
+    await MyChat.connect();
+  },
+
+  onLogoutClick: function () {
+    this.server.close();
+    this.connectKilled();
+  },
+
+  onWeatherClick: function () {
+    View.initWeather(this.WeatherButton);
+  },
+
+  saveButtonClick: function () {
+    room_name = document.querySelector("1").value;
+    url = document.querySelector("2").value;
+    welecome_msg = document.querySelector("2").value;
+    linked_room = document.querySelector("2").value;
+    console.log();
+  },
+
   // ShareRoomWelcome: function (room) {
   //   msg = {
   //     content: room.welcome_msg,
@@ -230,4 +258,5 @@ var MyChat = {
   //   console.log(data);
   // },
 };
+
 MyChat.init();

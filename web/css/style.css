@@ -2,8 +2,8 @@
 
 * {
   font-family: Helvetica, Arial, sans-serif;
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
 }
 
 @font-face {
@@ -13,26 +13,28 @@
 
 @font-face {
   font-family: "silkscreenfonttxt";
-  src: url("./silkscreen-font/slkscre.ttf")
+  src: url("./silkscreen-font/slkscre.ttf");
 }
 
 @font-face {
   font-family: "silkscreenfontchat";
-  src: url("./silkscreen-font/slkscr.ttf")
+  src: url("./silkscreen-font/slkscr.ttf");
 }
 
-html,body {
+html,
+body {
   height: 100%;
   width: 100%;
 }
 
 body {
-  background-color: slategrey ;
+  background-color: slategrey;
   /* height: 95%;
   width: 90%; */
   height: 100%;
   width: 100%;
   margin: auto;
+  min-height: 600px;
 }
 
 div {
@@ -40,9 +42,8 @@ div {
   height: 100%;
 }
 
-
 p {
-  margin:0;
+  margin: 0;
 }
 
 h1 {
@@ -63,14 +64,13 @@ img {
 input {
   width: 100%;
   box-sizing: border-box;
-  margin:0;
-  border:0;
-  padding-top:5px;
+  margin: 0;
+  border: 0;
+  padding-top: 5px;
   padding-bottom: 5px;
-  padding-right:10px;
-  padding-left:10px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
-
 
 #main {
   display: flex;
@@ -83,19 +83,26 @@ input {
 }
 
 #Universe {
-  position:absolute;
+  position: absolute;
   display: flex;
   justify-content: center;
   background-color: transparent;
   top: 0px;
-  left:350px;
-  border:1px solid #000000;
+  left: 350px;
+  border: 1px solid #000000;
   /* display: none; */
 }
 
-#EnterApp
-{
-  position:absolute;
+#gallery {
+  position: relative;
+  background-color: transparent;
+  z-index: 999;
+  top: calc(50% + 50px);
+
+  left: calc(50% - 200px);
+}
+#EnterApp {
+  position: absolute;
   width: 100%;
   height: 100%;
   display: flex;
@@ -110,14 +117,13 @@ input {
   height: 30px;
 }
 .btn:hover {
-
   transition: all 0.2s;
   background-color: rgba(118, 109, 217, 0.8);
   color: white;
 }
 
 #Start {
-  height:fit-content;
+  height: fit-content;
   width: auto;
   position: absolute;
   top: 50%;
@@ -132,7 +138,7 @@ input {
   padding-top: 10px;
   padding-bottom: 10px;
   background-color: #271777;
-  height:auto;
+  height: auto;
 }
 
 #myprofile {
@@ -156,8 +162,8 @@ button {
 }
 
 button:focus {
-  background-color:rgb(204, 202, 202);
-  color:rgb(78, 86, 93);
+  background-color: rgb(204, 202, 202);
+  color: rgb(78, 86, 93);
 }
 
 .usersButton {
@@ -167,24 +173,23 @@ button:focus {
 }
 
 #userpwd {
-  
-  position:absolute;
-  display:block;
-  top: calc(50% - 100px);;
+  position: absolute;
+  display: block;
+  /* top: calc(50% - 100px); */
+  top: 28%;
   width: 250px;
-  height:200px;
+  height: 200px;
 }
 
 #userpwd label {
   font-family: "silkscreenfonth3";
-  color:white;
+  color: white;
 }
 
 #userpwd input {
   font-family: "silkscreenfonttxt";
-  color:black;
+  color: black;
 }
-
 
 .onlineUsersHeader {
   height: 15.5px;
@@ -200,7 +205,6 @@ button:focus {
   overflow: auto;
 }
 
-
 .onlineUsers {
   height: auto;
   background-color: rgb(6, 43, 167);
@@ -213,7 +217,7 @@ button:focus {
 
 #history {
   /* flex: 0 0 300px; */
-  width:300px;
+  width: 300px;
   height: 100%;
   background-color: rgb(216, 210, 202);
   display: flex;
@@ -223,7 +227,7 @@ button:focus {
 .hpreview {
   display: flex;
   align-items: flex-start;
-  justify-content:space-between;
+  justify-content: space-between;
   height: 72px;
   text-align: left;
   background-color: azure;
@@ -232,7 +236,7 @@ button:focus {
 
 .previewbox {
   width: 225px;
-  height:auto;
+  height: auto;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
@@ -244,16 +248,14 @@ button:focus {
   font-size: small;
   color: rgb(108, 105, 105);
   padding: 2%;
-  height:15.5px;
+  height: 15.5px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 
-
-
 .contactname {
-  padding:2%;
+  padding: 2%;
   padding-bottom: 0;
 }
 
@@ -279,7 +281,6 @@ button:focus {
   /*display: none;*/
 }
 
-
 .profilepic {
   vertical-align: middle;
   width: 60px;
@@ -289,7 +290,7 @@ button:focus {
 
 .light {
   width: 20px;
-  height:20px;
+  height: 20px;
   position: relative;
   top: 20px;
   background-color: red;
@@ -316,8 +317,8 @@ button:focus {
   display: flex;
   align-items: flex-start;
   justify-content: space-evenly;
-  height:62px;
-  min-height:62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
+  height: 62px;
+  min-height: 62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
   background-color: black;
   color: white;
 }
@@ -326,28 +327,26 @@ button:focus {
   display: flex;
   align-items: flex-start;
   /*justify-content:space-between;*/
-  height:62px;
-  min-height:62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
+  height: 62px;
+  min-height: 62px; /* this is here because it forces flexbox to this height, without it it doesn't*/
   background-color: slateblue;
   background-color: black;
   color: white;
 }
 
 .groupinfo {
-  color:rgb(32, 31, 31);
+  color: rgb(32, 31, 31);
 }
 
 .righticons {
   width: 20px;
-  height:20px;
+  height: 20px;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
   background-color: transparent;
   cursor: pointer;
 }
-
-
 
 .lefticons {
   width: 60px;
@@ -359,7 +358,6 @@ button:focus {
   margin-left: 1%;
   cursor: pointer;
 }
-
 
 #conversation {
   overflow: auto;
@@ -374,7 +372,7 @@ button:focus {
 }
 
 .currentcontact {
-  height:auto;
+  height: auto;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
@@ -386,7 +384,7 @@ button:focus {
 }
 
 .received {
-  max-width: 200px; 
+  max-width: 200px;
   width: auto;
   height: fit-content;
   text-align: left;
@@ -400,8 +398,8 @@ button:focus {
 }
 
 .sent {
-  max-width: 200px; 
-  width: auto; 
+  max-width: 200px;
+  width: auto;
   height: fit-content;
   text-align: left;
   justify-self: right;
@@ -417,27 +415,26 @@ button:focus {
 #typesendmsg {
   display: flex;
   align-items: flex-start;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
   width: auto;
   padding-left: 10px;
 }
 
 .sendmessage {
-  width:50px;
+  width: 50px;
   cursor: pointer;
   border-radius: 3px;
   background-color: transparent;
-  color:aliceblue;
+  color: aliceblue;
   font-weight: 800;
   line-height: 100%;
   margin-top: 4px;
-  
-  font-family:"silkscreenfontchat";;
+  font-family: "silkscreenfontchat";
 }
 
 .currentmessage {
   display: block;
-  overflow:auto;
+  overflow: auto;
   resize: none;
   width: 93%;
   margin: 0;
@@ -457,12 +454,12 @@ button:focus {
 
 .currentmessage::placeholder {
   color: green;
-  font-family:"silkscreenfontchat";
+  font-family: "silkscreenfontchat";
   font-weight: bold;
 }
 
 .joinleft {
-  font-family:"silkscreenfontchat";
+  font-family: "silkscreenfontchat";
   border-radius: 5rem;
   background-color: #1dc9ff;
   color: black;
@@ -477,11 +474,10 @@ button:focus {
 
 .username {
   font-family: "silkscreenfonth3";
-  font-size:10pt;
+  font-size: 10pt;
   font-weight: 600;
   margin-bottom: 3px;
 }
-
 
 .myusername {
   display: none;
@@ -489,7 +485,7 @@ button:focus {
 
 .publishedmsg {
   font-family: "silkscreenfontchat";
-  font-size:9pt;
+  font-size: 9pt;
 }
 
 .private.publishedmsg {
@@ -504,6 +500,122 @@ button:focus {
 .fade-out {
   animation: fadeOut ease 5s;
   animation-fill-mode: forwards;
+}
+
+.createRoomForm {
+  background-color: white;
+  width: 400px;
+  height: auto;
+  border-radius: 5px;
+  position: absolute;
+  top: 32%;
+  left: 40%;
+  z-index: 999;
+}
+
+.fill-vertical {
+  border-radius: 5px;
+
+  display: block;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #271777;
+  height: 100%;
+  color: white;
+  padding: 10px;
+  font-family: "silkscreenfontchat";
+  font-weight: bold;
+}
+
+.fill-vertical input {
+  margin-bottom: 40px;
+  margin: 0 auto;
+}
+.save {
+  width: 400px;
+  cursor: pointer;
+  border-radius: 3px;
+  background-color: transparent;
+  color: aliceblue;
+  font-size: larger;
+  font-weight: 800;
+  padding-top: 20px;
+  font-family: "silkscreenfontchat";
+}
+.checkbox {
+  background-color: rgba(118, 109, 217, 0.8);
+  border-radius: 10px;
+  height: fit-content;
+  width:fit-content;
+  padding: 14px;
+  list-style: none;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  margin-top: 20px;
+  margin-left: -150px;
+}
+.checkbox_container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  font-size: 18px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.checkbox_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox_container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.checkbox_container input:checked ~ .checkmark {
+  background-color: #2196f3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.checkbox_container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.checkbox_container .checkmark:after {
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
 }
 
 @keyframes fadeOut {

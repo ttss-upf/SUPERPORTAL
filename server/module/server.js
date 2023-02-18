@@ -62,43 +62,23 @@ module.exports = () => {
         }
         receiver_list = findKey(World.users, room_name);
         receiver_list.splice(receiver_list.indexOf(sender), 1);
-        console.log("receiver_list", receiver_list);
         for (i = 0; i < receiver_list.length; i++) {
           var receiver = receiver_list[i];
           if (
             Math.abs(
               World.rooms_by_id[room_name].people.find(
                 (ele) => ele.username == receiver
-              ).position - World.rooms_by_id[room_name].people.find(
-                (ele) => ele.username == sender
-              ).position
+              ).position -
+                World.rooms_by_id[room_name].people.find(
+                  (ele) => ele.username == sender
+                ).position
             ) > 300
           ) {
-            console.log("too far", receiver);
-            console.log(
-              "position of receiver",
-              World.rooms_by_id[room_name].people.find(
-                (ele) => ele.username == receiver
-              ).position,
-              World.rooms_by_id[room_name].people.find(
-                (ele) => ele.username == sender
-              ).position
-            );
             receiver_list.splice(i, 1);
           } else {
-            console.log(
-              World.rooms_by_id[room_name].people.find(
-                (ele) => ele.username == receiver
-              ).position,
-              World.rooms_by_id[room_name].people.find(
-                (ele) => ele.username == sender
-              ).position
-            );
-            console.log("not far", receiver);
           }
         }
         if (receiver_list.length != 0) {
-          console.log("receiver_list", receiver_list.length);
           this.on_broadcast(data, connection, false, receiver_list);
         }
       }
@@ -137,10 +117,7 @@ module.exports = () => {
       // boradcast the message to everyone in the world to inform the log out message.
 
       receiver_list = findKey(World.users, room_name);
-      console.log("onclose before",receiver_list);
-      console.log("index", receiver_list.indexOf(current_user));
       // receiver_list.splice(receiver_list.indexOf(current_user), 1);
-      console.log("onclose",receiver_list);
       this.on_broadcast(data, connection, false, receiver_list);
     },
 
@@ -190,9 +167,12 @@ module.exports = () => {
         this.on_register(res, user_info);
       }
     },
+
     on_register: function (res, user_info) {
       user_info.id = user_id++;
       let user = World.createUser(user_info);
+      console.log("user", user);
+      console.log("userinfo", user_info);
       World.addUser(user);
 
       this.connection_dict[user.username] = { user: user };
@@ -203,6 +183,98 @@ module.exports = () => {
       });
       user_info.password = require("bcrypt").hashSync(user_info.password, 10);
       redis.set("user_list", user_info, true);
+    },
+
+    on_left_room: function (user, old_room, destination_name) {
+      var data = {
+        type: "leftroom",
+        content: user,
+      };
+      receiver_list = findKey(World.users, user.room);
+      old_room.people.splice(old_room.people.indexOf(user), 1);
+      this.on_broadcast(data, null, false, receiver_list);
+      user.room = destination_name;
+      destination_room = World.rooms_by_id[destination_name];
+      destination_room.people.push(user);
+      data = {
+        type: "joinedroom",
+        content: user,
+      };
+      World.users[user.username] = destination_room.name;
+      receiver_list = findKey(World.users, destination_room.name);
+      this.on_broadcast(data, null, false, receiver_list);
+    },
+
+    on_update: function () {
+      var dt = 0.03;
+      for (var i in World.rooms_by_id) {
+        var room = World.rooms_by_id[i];
+        let receiver_list = [];
+        for (let i = 0; i < room.people.length; i++) {
+          let user = room.people[i];
+          receiver_list.push(user.username);
+          Server.on_userinteract(room, user);
+
+          user.target[0] = clamp(user.target[0], room.range[0], room.range[1]);
+          var diff = user.target[0] - user.position;
+          var delta = diff;
+          if (delta > 0) delta = 30;
+          else if (delta < 0) delta = -30;
+          else delta = 0;
+          if (Math.abs(diff) < 2) {
+            delta = 0;
+            room.people[i].position = user.target[0];
+          } else {
+            room.people[i].position += delta * dt;
+          }
+
+          //updating gait and action
+          if (delta == 0) {
+            // interaction
+            // if (!interaction) user.gait = "idle";
+            user.gait = "idle";
+          } else {
+            if (delta > 0) user.facing = Model.FACING_RIGHT;
+            else user.facing = Model.FACING_LEFT;
+            user.gait = "walking";
+            user.action = "none";
+          }
+          for (val in room.exits) {
+            if (
+              isIntersect(user.target, room.exits[val]) &&
+              isClose(user.position, room.exits[val][0])
+            )
+              Server.on_left_room(user, room, val);
+          }
+
+          cam_offset = lerp(cam_offset, -user.position, 0.025);
+        }
+        let data = {
+          content: room,
+          type: "state",
+        };
+        if (receiver_list.length != 0) {
+          Server.on_broadcast(data, null, false, receiver_list);
+        }
+      }
+    },
+
+    on_userinteract: function (room, user) {
+      if (room.objects) {
+        Object.values(room.objects).forEach((val) => {
+          while (isInteract(user.target, val)) {
+            if (user.position == user.target[0]) {
+              user.target = [user.position, 0];
+              user.gait = val.reactionGait;
+              user.facing = val.reactionFacing;
+              user.action = val.reactionAction;
+              break;
+            } else {
+              break;
+            }
+          }
+        });
+      }
     },
 
     // get data from database
@@ -245,96 +317,6 @@ module.exports = () => {
       }
     },
 
-    on_left_room: function (user, room) {
-      while (isIntersect(user.target, room.exits)) {
-        if (isClose(user.position, room.exits[0])) {
-          var data = {
-            type: "leftroom",
-            content: user,
-          };
-          receiver_list = findKey(World.users, user.room);
-          room.people.splice(room.people.indexOf(user), 1);
-          this.on_broadcast(data, null, false, receiver_list);
-          user.room = room.leadsTo;
-          room = World.rooms_by_id[room.leadsTo];
-          room.people.push(user);
-          data = {
-            type: "joinedroom",
-            content: user,
-          };
-          World.users[user.username] = room.name;
-          receiver_list = findKey(World.users, room.name);
-          this.on_broadcast(data, null, false, receiver_list);
-        } else break;
-      }
-    },
-
-    on_update: function () {
-      var dt = 0.03;
-      for (var i in World.rooms_by_id) {
-        var room = World.rooms_by_id[i];
-        let receiver_list = [];
-        for (let i = 0; i < room.people.length; i++) {
-          let user = room.people[i];
-          receiver_list.push(user.username);
-          Server.on_userinteract(room, user);
-
-          user.target[0] = clamp(user.target[0], room.range[0], room.range[1]);
-          var diff = user.target[0] - user.position;
-          var delta = diff;
-          if (delta > 0) delta = 30;
-          else if (delta < 0) delta = -30;
-          else delta = 0;
-          if (Math.abs(diff) < 2) {
-            delta = 0;
-            room.people[i].position = user.target[0];
-          } else {
-            room.people[i].position += delta * dt;
-            console.log(room.people[i].position);
-          }
-
-          //updating gait and action
-          if (delta == 0) {
-            // interaction
-            // if (!interaction) user.gait = "idle";
-            user.gait = "idle";
-          } else {
-            if (delta > 0) user.facing = Model.FACING_RIGHT;
-            else user.facing = Model.FACING_LEFT;
-            user.gait = "walking";
-            user.action = "none";
-          }
-
-          //update current_room when leaving
-          Server.on_left_room(user, room);
-          cam_offset = lerp(cam_offset, -user.position, 0.025);
-        }
-        let data = {
-          content: room,
-          type: "state",
-        };
-        if (receiver_list.length != 0) {
-          Server.on_broadcast(data, null, false, receiver_list);
-        }
-      }
-    },
-    on_userinteract: function (room, user) {
-      if (room.objects) {
-        Object.values(room.objects).forEach((val) => {
-          while (isInteract(user.target, val)) {
-            if (user.position == user.target[0]) {
-              user.target = [user.position, 0];
-              user.gait = val.reactionGait;
-              user.facing = val.reactionFacing;
-              user.action = val.reactionAction;
-              break;
-            } else {
-              break;
-            }
-          }
-        });
-      }
-    },
     start: async function () {
       let room_res = await Server.on_load("room_list");
       for (val in room_res) {
@@ -342,6 +324,8 @@ module.exports = () => {
       }
       setInterval(Server.on_update, interval * 1000);
     },
+
+    on_test: function () {},
   };
 
   return Server;

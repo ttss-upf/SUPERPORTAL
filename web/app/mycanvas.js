@@ -16,7 +16,12 @@ var MyCanvas = {
   },
 
   draw: function () {
-    if (this.current_room) View.draw(this.current_room);
+    document.querySelector("#gallery").style.display = "none"
+    View.draw(this.current_room);
+  },
+  drawGallery: function() {
+    document.querySelector("#gallery").style.display = "block"
+    View.drawGallery();
   },
 
   OnUserSpeak: function (msg) {
@@ -39,7 +44,7 @@ var MyCanvas = {
       room_name = this.current_room.name;
       data = {
         type: "state",
-        content: this.current_room
+        content: this.current_room,
       };
       MyChat.server.send(JSON.stringify(data));
     }
@@ -54,7 +59,9 @@ var MyCanvas = {
 };
 
 function loop() {
-  MyCanvas.draw();
+  if (MyCanvas.current_room) {
+    MyCanvas.draw();
+  } else MyCanvas.drawGallery();
   requestAnimationFrame(loop);
 }
 

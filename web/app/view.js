@@ -18,7 +18,7 @@ var View = {
       this.canvas_w = this.canvas.parentNode.getBoundingClientRect().width;
       this.canvas_h = this.canvas.parentNode.getBoundingClientRect().height;
     }
-    this.drawWeather();
+    this.initWeather();
   },
 
   gait_animations: {
@@ -33,7 +33,31 @@ var View = {
     none: [0],
     sit: [13],
   },
+  drawGallery: function(){
 
+    var gallery = document.querySelector("#gallery");
+    var ctx = gallery.getContext("2d");
+    var parent = gallery.parentNode;
+    var rect = parent.getBoundingClientRect();
+    gallery.width = 400;
+    gallery.height = 100;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, gallery.width, gallery.height);
+    ctx.save();
+  
+    ctx.translate(gallery.width / 2, gallery.height / 2); // now the (0,0) is in the center of the canvas
+    ctx.scale(1.7, 1.7);
+    for (i = 1; i <= 6; i++) {
+      _x = -76 + (i - 1) * 30;
+      var user = new User({
+        id: 1,
+        gait: "walking",
+        position: _x,
+        avatar: STATIC_RESOURCE_ROOT + "character" + i + ".png",
+      });
+      View.drawUser(user, ctx);
+    }
+  },
   draw: function (current_room) {
     var parent = this.canvas.parentNode;
     var rect = parent.getBoundingClientRect();
@@ -42,6 +66,7 @@ var View = {
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();
+
     this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2); // now the (0,0) is in the center of the canvas
     this.ctx.scale(this.scale, this.scale);
     this.ctx.translate(this.cam_offset, 0);
@@ -51,30 +76,16 @@ var View = {
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(-1, -1, 2, 2);
     this.ctx.restore();
+    // set snow and rain drop
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
     if (this.weather == "rain") {
-      for (var c = 0; c < this.particles.length; c++) {
-        var p = this.particles[c];
-        this.ctx.beginPath();
-
-        this.ctx.moveTo(p.x, p.y);
-        this.ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
-        this.ctx.stroke();
-      }
       this.rain();
     } else if (this.weather == "snow") {
-      this.ctx.beginPath();
-      for (var i = 0; i < this.particles.length; i++) {
-        var p = this.particles[i];
-        this.ctx.moveTo(p.x, p.y);
-        this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-      }
-      this.ctx.fill();
       this.snow();
     }
   },
 
-  drawWeather: function (button) {
+  initWeather: function (button) {
     if (typeof button != "undefined")
       if (button.innerHTML == "weather toggle") {
         this.weather = "snow";
@@ -114,7 +125,7 @@ var View = {
     //draw users
     for (var i = 0; i < current_room.people.length; ++i) {
       var user = current_room.people[i];
-      this.drawUser(user);
+      this.drawUser(user, this.ctx);
       this.drawUsername(user);
       this.drawBubble(user);
     }
@@ -236,14 +247,12 @@ var View = {
     }
   },
 
-  drawUser: function (user) {
+  drawUser: function (user, ctx) {
     if (!user.avatar) return;
-
     var gait_anim = this.gait_animations[user.gait];
     var action_anim = this.action_animations[user.action];
     if (!gait_anim) return;
     if (!action_anim) return;
-
     var time = performance.now() * 0.001;
     var img = this.getImage(user.avatar);
     var gait_frame = gait_anim[Math.floor(time * 10) % gait_anim.length];
@@ -251,7 +260,7 @@ var View = {
     var facing = user.facing;
 
     if (user.action == "talking" && user.gait == "idle") {
-      this.ctx.drawImage(
+      ctx.drawImage(
         img,
         action_frame * 32,
         facing * 64,
@@ -263,7 +272,7 @@ var View = {
         64
       );
     } else if (user.action == "crouchdown" || user.action == "sit") {
-      this.ctx.drawImage(
+      ctx.drawImage(
         img,
         action_frame * 32,
         facing * 64,
@@ -280,7 +289,7 @@ var View = {
 
     //implementing jumping as 2 loops
     else if (user.gait == "jumping") {
-      this.ctx.drawImage(
+      ctx.drawImage(
         img,
         gait_frame * 32,
         facing * 64,
@@ -304,7 +313,7 @@ var View = {
 
       // this.drawBubble(user.position, -50, msg);
     } else if (user.action == "talking" && user.gait == "walking")
-      this.ctx.drawImage(
+      ctx.drawImage(
         img,
         gait_frame * 32,
         facing * 64,
@@ -317,7 +326,7 @@ var View = {
       );
     // remove talking and return talking onUserArrive
     else if (user.gait) {
-      this.ctx.drawImage(
+      ctx.drawImage(
         img,
         gait_frame * 32,
         facing * 64,
@@ -329,8 +338,8 @@ var View = {
         64
       );
       //this.drawBubble(user.position, -50, msg);
-      //this.ctx.font = "6px Helvetica";
-      //this.ctx.fillText(user.name, user.position - 10, 50);
+      //ctx.font = "6px Helvetica";
+      //ctx.fillText(user.name, user.position - 10, 50);
     }
   },
 
@@ -368,7 +377,15 @@ var View = {
     img.src = url;
     return img;
   },
+
   rain: function () {
+    for (var c = 0; c < this.particles.length; c++) {
+      var p = this.particles[c];
+      this.ctx.beginPath();
+      this.ctx.moveTo(p.x, p.y);
+      this.ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys);
+      this.ctx.stroke();
+    }
     for (var b = 0; b < this.particles.length; b++) {
       var p = this.particles[b];
       p.x += p.xs;
@@ -382,6 +399,13 @@ var View = {
   },
 
   snow: function () {
+    this.ctx.beginPath();
+    for (var i = 0; i < this.particles.length; i++) {
+      var p = this.particles[i];
+      this.ctx.moveTo(p.x, p.y);
+      this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+    }
+    this.ctx.fill();
     this.angle += 0.01;
     for (var i = 0; i < this.particles.length; i++) {
       var p = this.particles[i];
@@ -442,5 +466,12 @@ var View = {
       );
       lastdiv.scrollIntoView();
     }
+  },
+
+  showForm: function () {
+    // console.log(1);
+    document.querySelector(".createRoomForm").style.display == "none"
+      ? (document.querySelector(".createRoomForm").style.display = "block")
+      : (document.querySelector(".createRoomForm").style.display = "none");
   },
 };

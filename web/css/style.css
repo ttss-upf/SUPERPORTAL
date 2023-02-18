@@ -445,6 +445,8 @@ button:focus {
   font-size: 11pt;
   white-space: normal;
   border-radius: 3px;
+  font-family: "silkscreenfonth3";
+  color:green;
 }
 
 .currentmessage[contenteditable]:empty::before {
@@ -515,7 +517,6 @@ button:focus {
 
 .fill-vertical {
   border-radius: 5px;
-
   display: block;
   justify-content: space-between;
   width: 100%;
@@ -525,12 +526,24 @@ button:focus {
   padding: 10px;
   font-family: "silkscreenfontchat";
   font-weight: bold;
+
 }
 
 .fill-vertical input {
   margin-bottom: 40px;
+  font-family: "silkscreenfontchat";
+  font-weight: bold;
+  color:green;
   margin: 0 auto;
 }
+
+.fill-vertical select {
+  margin-bottom: 40px;
+  margin: 0 auto;
+  font-family: "silkscreenfontchat";
+  color: green;
+}
+
 .save {
   width: 400px;
   cursor: pointer;

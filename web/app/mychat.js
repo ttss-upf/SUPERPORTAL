@@ -4,6 +4,7 @@ var MyChat = {
 
   init: function () {
     this.window = document.querySelector("#main");
+    this.selectBox = document.querySelector("#background");
     this.saveButton = document.querySelector("#save");
     this.textarea = document.querySelector("textarea");
     this.loginButton = document.querySelector("#login");
@@ -22,6 +23,11 @@ var MyChat = {
     );
     this.textarea.addEventListener("keydown", this.inputText.bind(this, "3")); // send message on Enter
     this.sendButton.onclick = this.inputText.bind(this, "1"); // send message on "send" button click
+    for (i in Model.ROOMS) {
+      room = Model.ROOMS[i];
+      option = new Option(room.name, room.url);
+      this.selectBox.add(option);
+    }
   },
   connect: async function () {
     console.log("connecting");
@@ -34,6 +40,7 @@ var MyChat = {
   },
 
   fetchData: async function (url, data) {
+    console.log("fetch data from database");
     if (data && typeof data != "undefined") {
       let options = {
         method: "POST",
@@ -51,6 +58,7 @@ var MyChat = {
   },
 
   connectKilled: function () {
+    console.log("on log out");
     msg = {
       content: "You've successfully logged out.",
       username: "system message",
@@ -81,7 +89,6 @@ var MyChat = {
       case "joinedroom":
         user = World.createUser(data.content);
         World.addUser(user);
-        console.log(data);
         msg = {
           content: user.username + " has joined the room.",
           username: "system message",
@@ -89,6 +96,7 @@ var MyChat = {
           timestamp: new Date().toTimeString().slice(0, 5),
         };
         View.showText(msg, "joinleft");
+        this.shareRoomWelcome(World.rooms_by_id[user.room].welcome_msg);
         break;
 
       case "leftroom":
@@ -115,6 +123,7 @@ var MyChat = {
         break;
 
       case "state":
+        // console.log("data.content", data.content);
         World.updateRoom(data.content);
         MyCanvas.current_room = World.getRoom(data.content.name);
         break;
@@ -122,6 +131,7 @@ var MyChat = {
   },
 
   inputText: function (cas, event) {
+    console.log("input msg");
     if (event.key === "Enter" && event.shiftKey) {
       return;
     } else if (event.key === "Enter" || cas == "1") {
@@ -184,6 +194,7 @@ var MyChat = {
   },
 
   onLoginClick: async function (event) {
+    console.log("on login");
     if (this.input_username.value == "" || this.input_password.value == "") {
       alert("please input all the information");
       return;
@@ -208,14 +219,7 @@ var MyChat = {
     for (val in room_res) {
       World.updateRoom(room_res[val]);
     }
-    inputs = document.getElementsByName("radio");
-    inputs.forEach((element) => {
-      if (element.checked == true) {
-        user_res.content.avatar =
-          STATIC_RESOURCE_ROOT + "character" + element.value + ".png";
-        console.log("user_res.content.avatar", user_res.content.avatar);
-      }
-    });
+
     // console.log("user_res.content", user_res.content);
     this.my_user = World.createUser(user_res.content);
     World.addUser(this.my_user);
@@ -236,23 +240,51 @@ var MyChat = {
   },
 
   saveButtonClick: function () {
-    room_name = document.querySelector("1").value;
-    url = document.querySelector("2").value;
-    welecome_msg = document.querySelector("2").value;
-    linked_room = document.querySelector("2").value;
-    console.log();
+    room_name = document.querySelector("#roomname").value;
+    background = document.querySelector("#background");
+    url = background.value;
+    var index = background.selectedIndex;
+    room_key = background.options[index].text;
+    welcome_msg = document.querySelector("#welcomemsg").value;
+    // linked_room = document.querySelector("2").value;
+    if (!room_name || !welcome_msg) {
+      msg = {
+        content: "Please fill all the required information",
+        username: "system message",
+        type: "sysmsg",
+        timestamp: new Date().toTimeString().slice(0, 5),
+      };
+      View.showText(msg, "joinleft");
+    } else {
+      var room_model = Model.ROOMS[room_key];
+      var leadsTo = Object.values(World.rooms_by_id)[0].name;
+      var new_room = World.createRoom({
+        name: room_name,
+        url: url,
+        welcome_msg: welcome_msg,
+        exits: { leadsTo: room_model.exits_coordinate[0] },
+        leadsTo: [leadsTo],
+      });
+      World.updateRoom(new_room);
+      var msg = {
+        type: "state",
+        content: new_room,
+        timestamp: new Date().toTimeString().slice(0, 5),
+      };
+      this.server.send(JSON.stringify(msg));
+    }
   },
 
-  // ShareRoomWelcome: function (room) {
-  //   msg = {
-  //     content: room.welcome_msg,
-  //     username: "system message",
-  //     type: "sysmsg",
-  //     timestamp: new Date().toTimeString().slice(0, 5),
-  //   };
+  shareRoomWelcome: function (welcome_msg) {
+    msg = {
+      content: welcome_msg,
+      username: "system message",
+      type: "sysmsg",
+      timestamp: new Date().toTimeString().slice(0, 5),
+    };
 
-  //   View.showText(msg, "joinleft");
-  // },
+    View.showText(msg, "joinleft");
+  },
 
   // printInfo: function (data) {
   //   console.log(data);

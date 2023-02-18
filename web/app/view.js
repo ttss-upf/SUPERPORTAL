@@ -33,8 +33,8 @@ var View = {
     none: [0],
     sit: [13],
   },
-  drawGallery: function(){
 
+  drawGallery: function () {
     var gallery = document.querySelector("#gallery");
     var ctx = gallery.getContext("2d");
     var parent = gallery.parentNode;
@@ -44,7 +44,7 @@ var View = {
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, gallery.width, gallery.height);
     ctx.save();
-  
+
     ctx.translate(gallery.width / 2, gallery.height / 2); // now the (0,0) is in the center of the canvas
     ctx.scale(1.7, 1.7);
     for (i = 1; i <= 6; i++) {
@@ -58,6 +58,7 @@ var View = {
       View.drawUser(user, ctx);
     }
   },
+
   draw: function (current_room) {
     var parent = this.canvas.parentNode;
     var rect = parent.getBoundingClientRect();
@@ -140,7 +141,10 @@ var View = {
 
   drawExits: function (current_room) {
     this.ctx.fillStyle = "red";
-    this.ctx.fillRect(current_room.exits[0], current_room.exits[1], 5, 5);
+    for (val in current_room.exits) {
+      var exits = current_room.exits[val];
+      this.ctx.fillRect(exits[0], exits[1], 5, 5);
+    }
   },
 
   drawObjects: function (current_room) {

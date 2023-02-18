@@ -7,12 +7,12 @@ module.exports = (app, port, server) => {
     await server.on_login(req, res, next);
   });
 
-  // for testing data only
-  app.post("/save", async (req, res, next) => {
-    const data = req.body;
-    await redis.set(data.key, data.value);
-    res.send(true);
-  });
+  // // for testing data only
+  // app.post("/save", async (req, res, next) => {
+  //   const data = req.body;
+  //   await redis.set(data.key, data.value);
+  //   res.send(true);
+  // });
 
   app.get("/load/:key", async (req, res, next) => {
     const key = req.params.key;
@@ -21,9 +21,9 @@ module.exports = (app, port, server) => {
     res.send(value);
   });
 
+
   // 错误处理函数
   app.use((error, req, res, next) => {
-    //发送使用assert语句传入的状态码和错误提示信息
     console.log(error);
     res.status(error.statusCode).send({
       message: error.message,

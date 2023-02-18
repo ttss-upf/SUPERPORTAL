@@ -20,10 +20,7 @@
         </div>
         <div class="fill">
           <button class="connectButton">logout</button>
-          <button
-            class="newroomButton"
-            onclick="View.showForm();"
-          >
+          <button class="newroomButton" onclick="View.showForm();">
             new room
           </button>
           <button class="weatherButton">weather toggle</button>
@@ -118,31 +115,36 @@
       </div>
     </div>
     <div class="createRoomForm" id="createRoomForm" style="display: none">
+    <!-- <div class="createRoomForm" id="createRoomForm"> -->
       <div class="fill-vertical">
         Room Name
         <input
           type="text"
+          id="roomname"
           class="currentmessage"
           placeholder="input the room name"
         />
         Background
-        <input
+        <!-- <input
           type="text"
+          id="background"
           class="currentmessage"
           placeholder="choose the background"
-        />
+        /> -->
+        <select name="cars" id="background" class="currentmessage"></select>
         Welcome Message
         <input
           type="text"
+          id="welcomemsg"
           class="currentmessage"
           placeholder="input the welcome message"
         />
-        Linked Room
+        <!-- Linked Room
         <input
           type="text"
           class="currentmessage"
           placeholder="choose the linked room"
-        />
+        /> -->
         <input id="save" class="save" type="button" value="save" />
         <input
           class="save"
@@ -152,11 +154,21 @@
         />
       </div>
     </div>
+    <!--  -->
     <script src="./app/model.js"></script>
     <script src="./config.js"></script>
     <script src="./app/view.js"></script>
     <script src="./app/mychat.js"></script>
     <script src="./app/mycanvas.js"></script>
     <script src="./app/main.js"></script>
+    <!--  -->
+    <!--     
+    <script src="./p2/app/model.js"></script>
+    <script src="./p2/config.js"></script>
+    <script src="./p2/app/view.js"></script>
+    <script src="./p2/app/mychat.js"></script>
+    <script src="./p2/app/mycanvas.js"></script>
+    <script src="./p2/app/main.js"></script>
+     -->
   </body>
 </html>

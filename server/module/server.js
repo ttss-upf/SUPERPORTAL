@@ -175,7 +175,6 @@ module.exports = () => {
           linked_room.exits[new_room.name] = exits_coordinate;
           // set path from new room to old room
           World.updateRoom(new_room);
-          console.log("current World", World.rooms_by_id);
           break;
 
         default:

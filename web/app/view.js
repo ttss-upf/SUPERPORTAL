@@ -67,7 +67,11 @@ var View = {
     this.ctx.imageSmoothingEnabled = false;
     for (user in current_room.people)
       if (MyCanvas.my_user.username == current_room.people[user].username)
-        this.cam_offset = lerp(this.cam_offset, -current_room.people[user].position, 0.025);
+        this.cam_offset = lerp(
+          this.cam_offset,
+          -current_room.people[user].position,
+          0.025
+        );
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.save();
     this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2); // now the (0,0) is in the center of the canvas
@@ -75,10 +79,12 @@ var View = {
     this.ctx.translate(this.cam_offset, 0);
 
     if (current_room) this.drawRoom(current_room);
+
     //center point
     this.ctx.fillStyle = "red";
     this.ctx.fillRect(-1, -1, 2, 2);
     this.ctx.restore();
+
     // set snow and rain drop
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
     if (this.weather == "rain") {
@@ -142,10 +148,22 @@ var View = {
   },
 
   drawExits: function (current_room) {
-    this.ctx.fillStyle = "red";
+    // this.ctx.fillStyle = "red";
     for (val in current_room.exits) {
       var exits = current_room.exits[val];
-      this.ctx.fillRect(exits[0], exits[1], 5, 5);
+      // this.ctx.fillRect(exits[0], exits[1], 5, 5);
+      portal_image = this.getImage(STATIC_RESOURCE_ROOT + "portal.png");
+      this.ctx.drawImage(
+        portal_image,
+        20,
+        20,
+        220,
+        220,
+        exits[0] - 20,
+        exits[1] - 20,
+        50,
+        50
+      );
     }
   },
 
@@ -216,8 +234,8 @@ var View = {
           // console.log("msg received for render: " + text + username);
           w =
             //this.ctx.measureText(username).width +
-            this.ctx.measureText(text).width+10;
-          
+            this.ctx.measureText(text).width + 10;
+
           h = 15;
           radius = 5;
           // console.log("begin y at " + y + "x at " + x);
@@ -243,7 +261,7 @@ var View = {
           this.ctx.fill();
           this.ctx.stroke();
           this.ctx.fillStyle = "black";
-          this.ctx.fillText(text, x+5, y+10);
+          this.ctx.fillText(text, x + 5, y + 10);
           // this.ctx.fillText(username + ": " + text, x + 10, y + 10);
           // console.log("end bubble drawing");
         }
@@ -475,10 +493,13 @@ var View = {
   },
 
   showForm: function () {
-    // console.log(1);
     document.querySelector(".createRoomForm").style.display == "none"
       ? (document.querySelector(".createRoomForm").style.display = "block")
       : (document.querySelector(".createRoomForm").style.display = "none");
   },
 
+  changeRoomName: function (text) {
+    var title = document.querySelector("#roomName");
+    title.innerHTML = text;
+  },
 };

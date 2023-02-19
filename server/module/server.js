@@ -1,6 +1,6 @@
 module.exports = () => {
   var user_id = 0;
-  const interval = 0.03;
+  const interval = 0.02;
   const redis = require("../plugins/redis");
   var cam_offset = 0;
   // const { Model, World, User, Room } = require("../../www/p2/app/model");
@@ -68,7 +68,7 @@ module.exports = () => {
       }
     },
 
-    on_register: function (res, user_info) {
+    on_register: async function (res, user_info) {
       user_info.id = user_id++;
       let user = World.createUser(user_info);
       World.addUser(user);
@@ -79,7 +79,7 @@ module.exports = () => {
         msg: "Register successfully",
       });
       user_info.password = require("bcrypt").hashSync(user_info.password, 10);
-      redis.set("user_list", user_info, true);
+      await redis.set("user_list", user_info, true);
     },
 
     on_connect: function (connection, username) {
@@ -123,6 +123,7 @@ module.exports = () => {
           // get the name of room which the user is in.
           var logout_from_room = World.users[user_name];
           if (typeof World.rooms_by_id[logout_from_room] == "undefined") {
+            console.log("undefined room name");
             return;
           }
           var data = {
@@ -136,7 +137,7 @@ module.exports = () => {
       }
 
       // boradcast the message to everyone in the world to inform the log out message.
-      console.log("World.users", World.users);
+      console.log("World.users after close", World.users);
       receiver_list = findKey(World.users, logout_from_room);
       this.on_broadcast(data, connection, false, receiver_list);
     },
@@ -144,13 +145,14 @@ module.exports = () => {
     on_handle_message: function (connection, data) {
       switch (data.type) {
         case "state":
-          World.updateRoom(data.content);
+          current_room = data.content;
+          World.updateRoom(current_room);
           // save {user:room_name} in the World.users, need this when log out.
           for (i = 0; i < data.content.people.length; i++) {
             World.users[data.content.people[i].username] = data.content.name;
           }
           // send the state to everyone who is online.
-          this.on_broadcast(data, connection, false);
+          // this.on_broadcast(data, connection, false);
           break;
 
         case "text":
@@ -160,21 +162,65 @@ module.exports = () => {
           receiver_list = findKey(World.users, room_name);
           receiver_list.splice(receiver_list.indexOf(sender), 1);
           this.on_delete_far_receiver(receiver_list, room_name, sender);
+          if (receiver_list.length != 0) {
+            this.on_broadcast(data, connection, false, receiver_list);
+          }
           break;
 
         case "newroom":
           // set path from old room to new room
           new_room = data.content;
-          linked_room_name = Object.keys(new_room.exits)[0];
-          linked_room = World.rooms_by_id[linked_room_name];
-          if(linked_room.leadsTo.length >= 2){
+          old_room_name = Object.keys(new_room.exits)[0];
+          old_room = World.rooms_by_id[old_room_name];
+          if (old_room.leadsTo.length >= 2) {
             return;
           }
-          linked_room.leadsTo[1] = new_room.name;
-          exits_coordinate = Model.ROOMS[linked_room_name].exits_coordinate[1];
-          linked_room.exits[new_room.name] = exits_coordinate;
+          World.rooms_by_id[old_room_name].leadsTo[1] = new_room.name;
+          old_room_exits = Object.values(
+            World.rooms_by_id[old_room_name].exits
+          )[0];
+          // get template of old room is using
+          for (room_model in Model.ROOMS) {
+            if (
+              JSON.stringify(Model.ROOMS[room_model].exits_coordinate[0]) ==
+              JSON.stringify(old_room_exits)
+            ) {
+              var exits_coordinate =
+                Model.ROOMS[room_model].exits_coordinate[1];
+              break;
+            }
+          }
+          World.rooms_by_id[old_room_name].exits[new_room.name] =
+            exits_coordinate;
+          // console.log("old_room_name", old_room_name);
+          // console.log("current room", World.rooms_by_id);
+          // console.log("old_room", World.rooms_by_id[old_room_name]);
+          // console.log("old_room", World.rooms_by_id[old_room_name]);
+
           // set path from new room to old room
           World.updateRoom(new_room);
+          // receiver_list = [];
+          // for (i = 0; i < old_room.people.length; i++) {
+          //   var user = old_room.people[i];
+          //   receiver_list.push(user.username);
+          // }
+          data_save_to_database = [];
+          for (val in World.rooms_by_id) {
+            // initialize the data and convert the object format to list.
+            var string = JSON.stringify(World.rooms_by_id[val]);
+            room_to_database = JSON.parse(string);
+            room_to_database.people = [];
+            data_save_to_database.unshift(room_to_database);
+          }
+          // if (receiver_list.length != 0) {
+          var data = {
+            content: World.rooms_by_id,
+            type: "addroom",
+          };
+          // console.log(receiver_list);
+          this.on_broadcast(data, null, false, []);
+          // }
+          redis.set("room_list", data_save_to_database, false);
           break;
 
         default:
@@ -182,9 +228,9 @@ module.exports = () => {
           break;
       }
 
-      if (receiver_list.length != 0) {
-        this.on_broadcast(data, connection, false, receiver_list);
-      }
+      // if (receiver_list.length != 0) {
+      //   this.on_broadcast(data, connection, false, receiver_list);
+      // }
     },
 
     on_delete_far_receiver: function (receiver_list, room_name, sender) {
@@ -205,28 +251,28 @@ module.exports = () => {
       }
     },
 
-    on_remove_user_from_world: function (logout_from_room, user_name) {
+    on_remove_user_from_world: async function (logout_from_room, user_name) {
       for (i = 0; i < World.rooms_by_id[logout_from_room].people.length; i++) {
         if (
           World.rooms_by_id[logout_from_room].people[i].username == user_name
         ) {
           let user = World.rooms_by_id[logout_from_room].people[i];
-          redis.update_user(user.username, user);
           World.rooms_by_id[user.room].people.splice(i, 1);
-          delete this.connection_dict[user.username];
-          delete World.users[user.username];
+          delete World.users[user_name];
+          delete this.connection_dict[user_name];
+          await redis.update_user(user.username, user);
           break;
         }
       }
     },
 
     on_update: function () {
-      var dt = 0.03;
+      var dt = 0.04;
       for (var i in World.rooms_by_id) {
         var room = World.rooms_by_id[i];
-        let receiver_list = [];
-        for (let i = 0; i < room.people.length; i++) {
-          let user = room.people[i];
+        var receiver_list = [];
+        for (let index = 0; index < room.people.length; index++) {
+          var user = room.people[index];
           receiver_list.push(user.username);
           Server.on_userinteract(room, user);
           Server.on_calculate_action(room, user, dt);
@@ -234,11 +280,11 @@ module.exports = () => {
 
           cam_offset = lerp(cam_offset, -user.position, 0.025);
         }
-        let data = {
-          content: room,
-          type: "state",
-        };
         if (receiver_list.length != 0) {
+          var data = {
+            content: room,
+            type: "state",
+          };
           Server.on_broadcast(data, null, false, receiver_list);
         }
       }
@@ -255,8 +301,20 @@ module.exports = () => {
             content: user,
           };
           receiver_list = findKey(World.users, user.room);
-          old_room.people.splice(old_room.people.indexOf(user), 1);
-          this.on_broadcast(data, null, false, receiver_list);
+          for (ind = 0; ind < old_room.people.length; ind++) {
+            old_user = old_room.people[ind];
+            if (old_user.username == user.username) {
+              // console.log("before",old_room.people);
+              // console.log("old_user.name",old_user.username);
+              // console.log("user.name",user.username);
+              old_room.people.splice(ind, 1);
+              // console.log("after",old_room.people);
+              // console.log(ind);
+            }
+          }
+          if (receiver_list.length != 0) {
+            this.on_broadcast(data, null, false, receiver_list);
+          }
           user.room = destination_name;
           destination_room = World.rooms_by_id[destination_name];
           destination_room.people.push(user);
@@ -265,8 +323,13 @@ module.exports = () => {
             content: user,
           };
           World.users[user.username] = destination_room.name;
+          console.log("World.users after change", World.users);
+          user.position = 0;
+          user.target = [0, 0];
           receiver_list = findKey(World.users, destination_room.name);
-          this.on_broadcast(data, null, false, receiver_list);
+          if (receiver_list.length != 0) {
+            this.on_broadcast(data, null, false, receiver_list);
+          }
         }
       }
     },

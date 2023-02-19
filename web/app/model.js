@@ -1,4 +1,4 @@
-var STATIC_RESOURCE_ROOT = "./images/";
+var STATIC_RESOURCE_ROOT = "../images/";
 // var STATIC_RESOURCE_ROOT =  "./p2/images/"
 var Model = {
   ROOM_DEFAULT_BACKGROUND: STATIC_RESOURCE_ROOT + "pirate_island.png",
@@ -20,26 +20,44 @@ var Model = {
   FACING_FRONT: 1,
   FACING_LEFT: 2,
   FACING_BACK: 3,
-  ROOMS:{
-    "Pirate": {
-      "url": STATIC_RESOURCE_ROOT + "pirate_island.png",
-      "name": "Pirate",
-      "exits_coordinate": [[-30, -60],[30, 60]],
-      "object": {},
+  ROOMS: {
+    Pirate: {
+      url: STATIC_RESOURCE_ROOT + "pirate_island.png",
+      name: "Pirate",
+      exits_coordinate: [
+        [-30, -60],
+        [30, 60],
+      ],
+      object: {},
     },
-    "Beach": {
-      "url": STATIC_RESOURCE_ROOT + "beach_night.png",
-      "name": "Beach",
-      "exits_coordinate": [[-285,80],[-155,80]],
-      "object": {},
+    Beach: {
+      url: STATIC_RESOURCE_ROOT + "beach_night.png",
+      name: "Beach",
+      exits_coordinate: [
+        [-285, 80],
+        [121, -46, 5],
+      ],
+      object: {},
     },
-    "Beach_old": {
-      "url": STATIC_RESOURCE_ROOT + "beach_night_old.png",
-      "name": "Beach_old",
-      "exits_coordinate": [[-285,80],[-155,80]],
-      "object": {},
+    Beach_old: {
+      url: STATIC_RESOURCE_ROOT + "beach_night_old1.png",
+      name: "Beach_old",
+      exits_coordinate: [
+        [-285, 80],
+        [-121, -46, 5],
+      ],
+      object: {},
     },
-  }
+    Beach_old2: {
+      url: STATIC_RESOURCE_ROOT + "beach_night_old1.png",
+      name: "Beach_old2",
+      exits_coordinate: [
+        [-285, 80],
+        [-121, -46, 5],
+      ],
+      object: {},
+    },
+  },
 };
 
 function User(obj) {
@@ -91,7 +109,6 @@ var World = {
   },
   updateRoom: function (obj) {
     if (typeof obj != "object") return;
-
     this.rooms_by_id[obj.name] = obj;
     return this.rooms_by_id;
   },

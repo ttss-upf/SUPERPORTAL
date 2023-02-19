@@ -14,7 +14,7 @@ async function set(key, value, concat = false) {
   }
   if (concat) {
     let list = JSON.parse(await client.get(key)) || [];
-    list.push(value);
+    list.unshift(value);
     await client.set(key, JSON.stringify(list));
   } else {
     await client.set(key, value);

@@ -25,8 +25,10 @@ var MyChat = {
     this.sendButton.onclick = this.inputText.bind(this, "1"); // send message on "send" button click
     for (i in Model.ROOMS) {
       room = Model.ROOMS[i];
-      option = new Option(room.name, room.url);
-      this.selectBox.add(option);
+      if (room.isShow) {
+        option = new Option(room.name, room.url);
+        this.selectBox.add(option);
+      }
     }
   },
   connect: async function () {
@@ -79,7 +81,18 @@ var MyChat = {
       case "login":
         user = data.content;
         msg = {
-          content: "Welcome to Super Portal, " + this.my_user.username,
+          content:
+            "Welcome to Super Portal, " +
+            this.my_user.username +
+            ". You can whisper to someone by starting your message with @username, for example '@javier hello!'",
+          username: "system message",
+          type: "sysmsg",
+          timestamp: new Date().toTimeString().slice(0, 5),
+        };
+        View.showText(msg, "joinleft");
+        msg = {
+          content:
+            "Find the exits to explore the map. Or, turn this warped space into a maze by creating rooms from within rooms. You will notice doors unlock.",
           username: "system message",
           type: "sysmsg",
           timestamp: new Date().toTimeString().slice(0, 5),
@@ -157,45 +170,117 @@ var MyChat = {
   },
 
   inputText: function (cas, event) {
-    console.log("input msg");
     if (event.key === "Enter" && event.shiftKey) {
       return;
     } else if (event.key === "Enter" || cas == "1") {
       event.preventDefault();
+      // msg = this.handle_input();
       input = this.textarea.value;
+      if (input.startsWith("@")) {
+        switchType = "private";
+        var sendToUser = new Array();
+        const words = input.split("@");
+        for (var i = 1; i < words.length; i++) {
+          sendToUser.push(words[i].substring(0, input.indexOf(" ") - 1));
+          console.log(sendToUser);
+        }
+      } else {
+        switchType = "text";
+        sendToUser = "";
+      }
       msg = {
-        type: "text",
+        type: switchType,
         content: this.textarea.value,
         username: this.my_user.username,
         timestamp: new Date().toTimeString().slice(0, 5),
       };
-      s_msg = JSON.stringify(msg);
-      this.server.send(s_msg);
-      MyCanvas.OnUserSpeak(msg);
-      View.message_bubble.push({
-        content: msg.content,
-        username: msg.username,
-        dur: 500,
-      });
-      View.showText(msg, "sent");
-
+      if (msg.type === "private") {
+        this.handle_private_message(sendToUser);
+      } else {
+        this.handle_public_message(msg);
+      }
       this.textarea.value = "";
+    } else {
+      this.handle_typing_message();
     }
-    else {
-      msg = {
-        type: "typing",
-        content: "...typing...",
-        username: this.my_user.username,
-        timestamp: new Date().toTimeString().slice(0, 5),
+  },
+
+  handle_input: function () {},
+
+  handle_typing_message: function () {
+    msg = {
+      type: "typing",
+      content: "...typing...",
+      username: this.my_user.username,
+      timestamp: new Date().toTimeString().slice(0, 5),
+    };
+    s_msg = JSON.stringify(msg);
+    this.server.send(s_msg);
+    View.message_bubble.push({
+      content: "...typing...",
+      username: msg.username,
+      dur: 100,
+    });
+  },
+
+  handle_public_message: function (msg) {
+    s_msg = JSON.stringify(msg);
+    this.server.send(s_msg);
+    MyCanvas.OnUserSpeak(msg);
+    View.message_bubble.push({
+      content: msg.content,
+      username: msg.username,
+      dur: 500,
+    });
+    View.showText(msg, "sent");
+  },
+
+  handle_private_message: function (receiver_list) {
+    sendToUser = [];
+    receiver_list.forEach((receiver) => {
+      for (val in MyCanvas.current_room.people) {
+        if (receiver == MyCanvas.current_room.people[val].username)
+          sendToUser.push(receiver);
+      }
+    });
+    if (sendToUser.length == 0 || receiver_list.length == 0) {
+      errorNoUsermsg = {
+        content: "Message was not sent because user(s) is/are not in the room.",
+        username: "system message",
+        type: "sysmsg",
       };
+      View.showText(errorNoUsermsg, "joinleft");
+      return;
+    } else {
+      msg.sendToUser = sendToUser;
       s_msg = JSON.stringify(msg);
       this.server.send(s_msg);
-      View.message_bubble.push({
-        content: "...typing...",
-        username: msg.username,
-        dur: 100,
-      });
+      View.showText(msg, "sent");
     }
+
+    // if (
+    //   receiver_list.every((receiver) => {
+    //     for (i in MyCanvas.current_room.people) {
+    //       receiver == MyCanvas.current_room.people[i].username;
+    //     }
+    //   })
+    // ) {
+    //   msg.sendToUser = receiver_list;
+    //   s_msg = JSON.stringify(msg);
+    //   this.server.send(s_msg);
+    //   View.showText(msg, "sent");
+    // } else {
+    //   errorNoUsermsg = {
+    //     content:
+    //       "Message was not sent because user(s) " +
+    //       receiver +
+    //       " is/are not in the room.",
+    //     username: "system message",
+    //     type: "sysmsg",
+    //   };
+    //   View.showText(errorNoUsermsg, "joinleft");
+    //   this.server.feedback = false;
+    // }
   },
 
   onLoginClick: async function (event) {
@@ -280,7 +365,7 @@ var MyChat = {
         old_room_name = val;
       }
     }
-    // generate exits for new room we want to create
+    // generate exits for the new room we want to create
     var exits = {};
     exits[old_room_name] = room_model.exits_coordinate[0];
     // create new room object and intilize the room

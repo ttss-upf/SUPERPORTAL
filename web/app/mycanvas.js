@@ -41,6 +41,7 @@ var MyCanvas = {
           user.target = this.my_user.target;
         }
       });
+      console.log(this.my_user.target);
       room_name = this.current_room.name;
       data = {
         type: "state",

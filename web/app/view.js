@@ -1,4 +1,3 @@
-//var FIRSTLOOP = true;
 var LOOPS = 0;
 var imgs = {};
 var View = {
@@ -149,21 +148,34 @@ var View = {
 
   drawExits: function (current_room) {
     // this.ctx.fillStyle = "red";
-    for (val in current_room.exits) {
-      var exits = current_room.exits[val];
-      // this.ctx.fillRect(exits[0], exits[1], 5, 5);
-      portal_image = this.getImage(STATIC_RESOURCE_ROOT + "portal.png");
-      this.ctx.drawImage(
-        portal_image,
-        20,
-        20,
-        220,
-        220,
-        exits[0] - 20,
-        exits[1] - 20,
-        50,
-        50
-      );
+    // for (val in current_room.exits) {
+    //   var exits = current_room.exits[val];
+    //   this.ctx.fillRect(exits[0], exits[1], 5, 5);
+    // }
+    for (template_name in Model.ROOMS) {
+      if (
+        Model.ROOMS[template_name].exits_coordinate[0].toString() ==
+        Object.values(current_room.exits)[0].toString()
+      ) {
+        var exits_coordinate = Model.ROOMS[template_name].exits_coordinate;
+        var exits_offset = Model.ROOMS[template_name].exits_offset
+        if (current_room.leadsTo.length != 2) {
+          portal_image = this.getImage(
+            STATIC_RESOURCE_ROOT + "blocked-exit.png"
+          );
+          this.ctx.drawImage(
+            portal_image,
+            200,
+            200,
+            250,
+            250,
+            exits_coordinate[1][0] - exits_offset[1][0],
+            exits_coordinate[1][1] - exits_offset[1][1],
+            200,
+            200
+          );
+        }
+      }
     }
   },
 

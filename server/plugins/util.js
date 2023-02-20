@@ -9,7 +9,7 @@ function lerp(a, b, f) {
 function isIntersect(click, exit) {
   if (typeof exit == "undefined") return;
   // console.log(click, exit);
-  if (Math.abs(click[0] - exit[0]) <= 10 && Math.abs(click[1] - exit[1]) <= 10)
+  if (Math.abs(click[0] - exit[0]) <= 30 && Math.abs(click[1] - exit[1]) <= 30)
     return true;
 }
 

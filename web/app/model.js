@@ -10,7 +10,7 @@ var Model = {
   CHARACTER_DEFAULT_POSITION: 0,
   // room info
   ROOM_DEFAULT_NAME: "DEFAULT ROOMRNAME",
-  ROOM_DEFAULT_RANGE: [-300, 300],
+  ROOM_DEFAULT_RANGE: [-700, 700],
   ROOM_DEFAULT_LEADSTO: [],
   ROOM_DEFAULT_OBJECT: {},
   ROOM_DEFAULT_WEATHER: "snow",
@@ -22,40 +22,74 @@ var Model = {
   FACING_BACK: 3,
   ROOMS: {
     Pirate: {
+      isShow: false,
       url: STATIC_RESOURCE_ROOT + "pirate_island.png",
       name: "Pirate",
       exits_coordinate: [
         [-30, -60],
-        [30, 60],
+        [290, 70],
       ],
       object: {},
+      exits_offset: [
+        [0, 0],
+        [140, 160],
+      ],
     },
     Beach: {
+      isShow: false,
       url: STATIC_RESOURCE_ROOT + "beach_night.png",
       name: "Beach",
       exits_coordinate: [
-        [-285, 80],
+        [-290, 90],
         [121, -46, 5],
       ],
       object: {},
+      exits_offset: [
+        [0, 0],
+        [140, 140],
+      ],
     },
-    Beach_old: {
-      url: STATIC_RESOURCE_ROOT + "beach_night_old1.png",
-      name: "Beach_old",
+    Kitchen: {
+      isShow: true,
+      url: STATIC_RESOURCE_ROOT + "kitchen.png",
+      name: "Kitchen",
       exits_coordinate: [
-        [-285, 80],
-        [-121, -46, 5],
+        [75, -58],
+        [250, -42.5],
       ],
       object: {},
+      exits_offset: [
+        [0, 0],
+        [140, 140],
+      ],
     },
-    Beach_old2: {
-      url: STATIC_RESOURCE_ROOT + "beach_night_old1.png",
-      name: "Beach_old2",
+    Street_Day: {
+      isShow: true,
+      url: STATIC_RESOURCE_ROOT + "street_day.png",
+      name: "Street_Day",
       exits_coordinate: [
-        [-285, 80],
-        [-121, -46, 5],
+        [50, -60],
+        [249, 29],
       ],
       object: {},
+      exits_offset: [
+        [0, 0],
+        [115, 160],
+      ],
+    },
+    Street_Night: {
+      isShow: true,
+      url: STATIC_RESOURCE_ROOT + "street_night.png",
+      name: "Street_Night",
+      exits_coordinate: [
+        [120, -75],
+        [250, 30],
+      ],
+      object: {},
+      exits_offset: [
+        [0, 0],
+        [116, 161],
+      ],
     },
   },
 };

@@ -167,6 +167,18 @@ module.exports = () => {
           }
           break;
 
+        case "typing":
+          // it is only a text message or system message, so dont send it back to the sender.
+          var sender = data.username;
+          var room_name = World.users[sender];
+          receiver_list = findKey(World.users, room_name);
+          receiver_list.splice(receiver_list.indexOf(sender), 1);
+          this.on_delete_far_receiver(receiver_list, room_name, sender);
+          if (receiver_list.length != 0) {
+            this.on_broadcast(data, connection, false, receiver_list);
+          }
+          break;
+
         case "newroom":
           // set path from old room to new room
           new_room = data.content;

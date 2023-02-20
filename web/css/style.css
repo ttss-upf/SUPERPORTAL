@@ -98,7 +98,7 @@ input {
   position: relative;
   background-color: transparent;
   z-index: 999;
-  top: calc(50% + 50px);
+  top: calc(50% + 100px);
 
   left: calc(50% - 200px);
 }

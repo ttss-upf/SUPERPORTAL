@@ -1,4 +1,4 @@
-var STATIC_RESOURCE_ROOT = "../images/";
+var STATIC_RESOURCE_ROOT = "./images/";
 // var STATIC_RESOURCE_ROOT =  "./p2/images/"
 var Model = {
   ROOM_DEFAULT_BACKGROUND: STATIC_RESOURCE_ROOT + "pirate_island.png",

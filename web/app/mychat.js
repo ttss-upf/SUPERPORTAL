@@ -131,6 +131,15 @@ var MyChat = {
         View.showText(data, "received");
         break;
 
+      case "typing":
+        View.message_bubble.push({
+          content: data.content,
+          username: data.username,
+          dur: 100,
+        });
+        //View.showText(data, "received");
+        break;
+
       case "state":
         // console.log("data.content", data.content);
         World.updateRoom(data.content);
@@ -171,6 +180,21 @@ var MyChat = {
       View.showText(msg, "sent");
 
       this.textarea.value = "";
+    }
+    else {
+      msg = {
+        type: "typing",
+        content: "...typing...",
+        username: this.my_user.username,
+        timestamp: new Date().toTimeString().slice(0, 5),
+      };
+      s_msg = JSON.stringify(msg);
+      this.server.send(s_msg);
+      View.message_bubble.push({
+        content: "...typing...",
+        username: msg.username,
+        dur: 100,
+      });
     }
   },
 

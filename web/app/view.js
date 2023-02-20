@@ -131,6 +131,8 @@ var View = {
     //draw background
     img = this.getImage(current_room.url);
     this.ctx.drawImage(img, -img.width / 2, -img.height / 2);
+    //draw exits
+    this.drawExits(current_room);
     //draw users
     for (var i = 0; i < current_room.people.length; ++i) {
       var user = current_room.people[i];
@@ -141,8 +143,6 @@ var View = {
     // draw bubbles
     //draw target
     this.drawTarget();
-    //draw exits
-    this.drawExits(current_room);
     //draw interactive objects
     this.drawObjects(current_room);
   },
